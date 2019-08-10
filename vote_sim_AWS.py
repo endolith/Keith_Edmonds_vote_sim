@@ -109,9 +109,9 @@ df_parties = pd.DataFrame(columns = ['x', 'y', 'size', 'party_name'])
 
 #Iterate over each simulation
 start_time = time()
-for rand in range(1000):
-    if (rand % 10 == 0) or rand < 10:
-        print('iteration: ' + str(rand))
+for iteration in range(1000):
+    if (iteration % 10 == 0) or iteration < 10:
+        print('iteration: ' + str(iteration))
         print(datetime.datetime.now())
         print('processing_minutes = ' + str((time() - start_time)/60), flush=True)
 
@@ -126,7 +126,7 @@ for rand in range(1000):
                     cluster_std=party_std,
                     center_box=(-8.0, 8.0),
                     shuffle=True,
-                    random_state=rand)  # For reproducibility
+                    random_state=iteration)  # For reproducibility
 
     party_list = ['red','green','blue','black','yellow','cyan']
 

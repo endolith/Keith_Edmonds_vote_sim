@@ -5,7 +5,7 @@ import matplotlib.image as mpimg
 from matplotlib.text import TextPath
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-# 
+#
 # Types of problems to handle
 # https://www.rangevoting.org/AssetBC.html
 # https://groups.google.com/forum/#!topic/electionscience/Rk4ZGf-s-s8
@@ -64,20 +64,20 @@ ax1.axis('off')
 
 # Scatter plot
 ax2 = fig.add_subplot(1, 2, 2)
-ax2.plot(df_red['x'],df_red['y'],".",label = 'Red', color='r') 
-ax2.plot(df_green['x'],df_green['y'],".",label = 'Green', color='g') 
+ax2.plot(df_red['x'],df_red['y'],".",label = 'Red', color='r')
+ax2.plot(df_green['x'],df_green['y'],".",label = 'Green', color='g')
 ax2.plot(df_blue['x'],df_blue['y'],".",label = 'Blue', color='b')
 
 #Candidates
 for c in candidates:
     ax2.plot(c[1], c[2],marker=TextPath((0,0), c[0]),markersize=20, color='k')
 
-ax2.set_xlim(-10, 10) 
-ax2.set_ylim(-10, 10)    
+ax2.set_xlim(-10, 10)
+ax2.set_ylim(-10, 10)
 ax2.set_title('Political Compass')
 ax2.set_xlabel('Planned Economy  <--  Economics  -->  Free Market')
-ax2.set_ylabel('Liberal  <-- Government  --> Authoritarian')    
-lgd2 = ax2.legend(loc=1) 
+ax2.set_ylabel('Liberal  <-- Government  --> Authoritarian')
+lgd2 = ax2.legend(loc=1)
 fig.savefig("Simulated_Spectrum", dpi=300)
 
 if centerists:
@@ -86,11 +86,11 @@ if centerists:
     pos_center = np.random.multivariate_normal(mean_center, cov_center, 3500)
     df_center = pd.DataFrame.from_records(pos_center, columns = ['x','y'])
     df_center['colour'] = 'center'
-    
+
     df_voters = pd.concat([df_red, df_green, df_blue, df_center],ignore_index=True)
 else:
     df_voters = pd.concat([df_red, df_green, df_blue],ignore_index=True)
-        
+
 
 #Number of voters
 V = df_voters.shape[0]
@@ -133,12 +133,12 @@ axb.set_zlabel('Voter Count')
 axb.view_init(60, 240)
 fig2.colorbar(ax = axb, mappable = surf, shrink=0.5, aspect=5)
 fig2.savefig("3D_Population", dpi=300)
-        
+
 distance = pd.DataFrame()
 S = pd.DataFrame()
-        
-for c in candidates: 
-    distance[c[0]] = df_voters[['x', 'y']].sub(np.array([c[1], c[2]])).pow(2).sum(1).pow(0.5)    
+
+for c in candidates:
+    distance[c[0]] = df_voters[['x', 'y']].sub(np.array([c[1], c[2]])).pow(2).sum(1).pow(0.5)
     S[c[0]] = round(np.clip(K - distance[c[0]], 0, np.inf))
 
 #rowwise max set to 5
@@ -157,33 +157,33 @@ def get_winners(S_in,Selection = 'default'):
         #select winner
         if Selection == 'Monroe':
             sum_scores = pd.DataFrame.from_records(np.sort(S_in.values, axis=0), columns = S_in.columns).tail(round(V/W)).sum()
-        else:            
+        else:
             sum_scores = S_in.sum()
-        
-        #print( sum_scores)   
-                    
+
+        #print( sum_scores)
+
         #w = index with highest sum_scores
-        w = sum_scores.idxmax()  
-        
+        w = sum_scores.idxmax()
+
         #print(w)
-            
+
         winner_list.append(w)
         surplus_factor = max( sum_scores[w] *W/V , 1)
-    
+
         #Score spent on each winner by each voter
         score_spent = S_in[w]/ surplus_factor
-        
+
         #Total score left to be spent by each voter
-        score_remaining = np.clip(score_remaining-score_spent,0,1) 
-    
+        score_remaining = np.clip(score_remaining-score_spent,0,1)
+
         #Update Ballots
         #set scores to zero for winner so they don't win again
         #S_in[w]=0
         #Take score off of ballot (ie reweight)
-    
+
         for c in S_in.columns:
             S_in[c] = pd.DataFrame([S_in[c], score_remaining]).min()
-        
+
     return winner_list
 
 default_winners = get_winners(S_in=S.divide(K).copy(),Selection = 'default')
@@ -195,5 +195,5 @@ print(default_winners)
 
 print('Monroe Winner set is:')
 print(monroe_winners)
-        
+
 plt.show()

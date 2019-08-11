@@ -5,6 +5,7 @@ import numpy as np
 from time import time
 import datetime
 import sys
+from scipy.spatial.distance import cdist
 
 #
 # Types of problems to handle
@@ -141,15 +142,12 @@ for iteration in range(1000):
     df_can = pd.DataFrame({'x':xx.ravel(),'y':yy.ravel()})
     df_can['Name'] = '(' + df_can['x'].astype(str) +','+ df_can['y'].astype(str) + ')'
 
-    #Get distances then scores
-    distance = pd.DataFrame()
-    S = pd.DataFrame()
-
-    #loop over array to help with speed
-    candidates = df_can.values
-    for c in candidates:
-        distance[c[2]] = df_voters[['x', 'y']].sub(np.array([c[0], c[1]])).pow(2).sum(1).pow(0.5)
-        S[c[2]] = round(np.clip(K - 2.0*distance[c[2]], 0.0, K))
+    # Calculate Euclidean between all voters and all candidates
+    # and then convert to scores
+    dists = cdist(df_voters[['x', 'y']], df_can[['x', 'y']])
+    distance = pd.DataFrame(dists, columns=df_can.values[:, 2])
+    scores = np.around(np.clip(K - 2.0*dists, 0.0, K))
+    S = pd.DataFrame(scores, columns=df_can.values[:, 2])
 
     #rowwise max set to 5
     columns = distance.idxmin('columns')

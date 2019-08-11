@@ -19,11 +19,10 @@ log_file = log_file.replace(':','-')
 term = sys.stdout
 sys.stdout = f = open(log_file,'w')
 
-
-#set thebasic parameters
-W = 5.0 #Number of winners
-K = 5.0 #the maximum possible score is 5
-V = 10000 #Number of voters
+# Set the basic parameters
+W = 5.0   # Number of winners
+K = 5     # The maximum possible score is 5
+V = 10000 # Number of voters
 
 # function to turn scores into a winner set for various systems
 def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transform = False, W=W, K=K):

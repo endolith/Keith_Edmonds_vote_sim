@@ -78,9 +78,9 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
             #in most simulations this would not be needed since you would want to check for for
             #S_wrk[w]=0
             #Take score off of ballot (ie reweight)
-
-            for c in S_wrk.columns:
-                S_wrk[c] = pd.DataFrame([S_wrk[c], score_remaining]).min()
+            mins = np.minimum(S_wrk.values,
+                              score_remaining.values[:, np.newaxis])
+            S_wrk = pd.DataFrame(mins, columns = S_wrk.columns)
         elif Reweight == 'Divisor':
             total_sum =  S_orig[winner_list].sum(axis=1)
             S_wrk = S_orig.div(total_sum + 1.0, axis = 0)

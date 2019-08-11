@@ -31,11 +31,11 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
 
     #create the working set of scores
     if KP_Transform:
-        #the KP transform changes each voter into a set of approval voters
-        S_wrk = pd.DataFrame([], columns = S_in.columns )
-        #Only implemented for K=5
-        for i in [0,1,2,3,4]:
-            S_wrk = S_wrk.append(pd.DataFrame.from_records(np.where(S_in>i,1,0), columns = S_in.columns ))
+        # The KP transform changes each voter into a set of K approval voters
+        groups = []
+        for threshold in range(K):
+            groups.append(np.where(S_in.values > threshold, 1, 0))
+        S_wrk = pd.DataFrame(np.concatenate(groups), columns=S_in.columns)
     else:
         #Normalise so scores are in [0,1]
         S_wrk = S_in.divide(K)

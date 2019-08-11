@@ -147,12 +147,10 @@ for iteration in range(1000):
     dists = cdist(df_voters[['x', 'y']], df_can[['x', 'y']])
     distance = pd.DataFrame(dists, columns=df_can.values[:, 2])
     scores = np.around(np.clip(K - 2.0*dists, 0.0, K))
-    S = pd.DataFrame(scores, columns=df_can.values[:, 2])
 
-    #rowwise max set to 5
-    columns = distance.idxmin('columns')
-    for index in S.index:
-        S.loc[index,columns[index]] = 5
+    # Row-wise, set max to 5
+    scores[np.arange(len(scores)), np.argmin(dists, 1)] = 5
+    S = pd.DataFrame(scores, columns=df_can.values[:, 2])
 
     #store metrics for each method
     total_utility = {}

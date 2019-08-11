@@ -24,20 +24,20 @@ W = 5.0 #Number of winners
 K = 5.0 #the maximum possible score is 5
 V = 10000 #Number of voters
 
-#funtion to turn scores into a winner set for variouse systems
+# function to turn scores into a winner set for various systems
 def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transform = False, W=W, K=K):
 
     V = S_in.shape[0]
 
     #create the working set of scores
     if KP_Transform:
-        #the KP transoform changes each voter into a set of approval voters
+        #the KP transform changes each voter into a set of approval voters
         S_wrk = pd.DataFrame([], columns = S_in.columns )
         #Only implemented for K=5
         for i in [0,1,2,3,4]:
             S_wrk = S_wrk.append(pd.DataFrame.from_records(np.where(S_in>i,1,0), columns = S_in.columns ))
     else:
-        #Normalise so score are in [0,1]
+        #Normalise so scores are in [0,1]
         S_wrk = S_in.divide(K)
 
     #make copy of working scores
@@ -61,7 +61,7 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
             w = S_orig.pow(W-R).div(total_sum + 1.0, axis = 0).sum().idxmax()
         winner_list.append(w)
 
-        #Rewight the working scores
+        #Reweight the working scores
         if Reweight == 'Unitary':
             surplus_factor = max( S_wrk.sum()[w] *W/V , 1.0)
 
@@ -134,9 +134,9 @@ for iteration in range(1000):
     df_voters['party_ID'] = party_ID
     df_voters['party_name'] = [party_list[i] for i in party_ID]
 
-    #Put Candidates the each grid point in a 2D space
-    #This is the best way to do it since candidates in the real world
-    #will adjust to the chosen system and we only care about the optimal case
+    # Put Candidates on each grid point in a 2D space
+    # This is the best way to do it since candidates in the real world
+    # will adjust to the chosen system and we only care about the optimal case
     xx, yy = np.meshgrid(range(-9, 10), range(-9, 10))
     df_can = pd.DataFrame({'x':xx.ravel(),'y':yy.ravel()})
     df_can['Name'] = '(' + df_can['x'].astype(str) +','+ df_can['y'].astype(str) + ')'

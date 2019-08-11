@@ -57,8 +57,9 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
         elif Selection == 'Utilitarian':
             w = S_wrk.sum().idxmax()
         elif Selection == 'Exponential':
-            total_sum =  S_orig[winner_list].sum(axis=1)
-            w = S_orig.pow(W-R).div(total_sum + 1.0, axis = 0).sum().idxmax()
+            total_sum = S_orig[winner_list].sum(axis=1)
+            fast_pow = S_orig.values**(W-R)
+            w = pd.DataFrame(fast_pow, columns=S_wrk.columns).div(total_sum + 1.0, axis = 0).sum().idxmax()
         winner_list.append(w)
 
         #Reweight the working scores

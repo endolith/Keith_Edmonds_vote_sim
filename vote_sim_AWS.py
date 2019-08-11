@@ -116,14 +116,19 @@ for iteration in range(1000):
         print(datetime.datetime.now())
         print('processing_minutes = ' + str((time() - start_time)/60), flush=True)
 
+    # Number of party distributions
     num_parties = np.random.randint(2, 7)
+
+    # Spread of each distribution
     party_std = np.random.uniform(low=0.5, high=2.0, size=num_parties)
+
+    # Number of voters in each party
     party_voters = [int(i) for i in np.random.dirichlet(np.ones(num_parties))*V]
 
-    #Make some fake vote data
-    #each voter is simulated as a point in a 2D space
-    location, party_ID = make_blobs(n_samples=party_voters, #voters
-                    n_features=2, #dimensions
+    # Make some fake vote data
+    # Each voter is simulated as a point in a 2D space
+    location, party_ID = make_blobs(n_samples=party_voters,  # voters
+                    n_features=2,  # dimensions
                     cluster_std=party_std,
                     center_box=(-8.0, 8.0),
                     shuffle=True,

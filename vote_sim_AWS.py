@@ -38,7 +38,7 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
         S_wrk = pd.DataFrame(np.concatenate(groups), columns=S_in.columns)
     else:
         #Normalise so scores are in [0,1]
-        S_wrk = S_in.divide(K)
+        S_wrk = pd.DataFrame(S_in.values/K, columns=S_in.columns)
 
     #make copy of working scores
     S_orig = S_wrk.copy()

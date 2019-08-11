@@ -53,7 +53,7 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
         #select winner
         #w = index with highest selection metric
         if Selection == 'Monroe':
-            w = pd.DataFrame.from_records(np.sort(S_wrk.values, axis=0), columns = S_wrk.columns).tail(round(V/W)).sum().idxmax()
+            w = pd.DataFrame(np.sort(S_wrk.values, axis=0), columns=S_wrk.columns).tail(round(V/W)).sum().idxmax()
         elif Selection == 'Utilitarian':
             w = S_wrk.sum().idxmax()
         elif Selection == 'Exponential':

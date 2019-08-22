@@ -110,11 +110,13 @@ df_parties = pd.DataFrame(columns = ['x', 'y', 'size', 'party_name'])
 
 #Iterate over each simulation
 start_time = time()
-for iteration in range(1000):
+for iteration in range(20000):
     if (iteration % 10 == 0) or iteration < 10:
         print('iteration: ' + str(iteration))
         print(datetime.datetime.now())
         print('processing_minutes = ' + str((time() - start_time)/60), flush=True)
+
+    np.random.seed(iteration )
 
     # Number of party distributions
     num_parties = np.random.randint(2, 7)
@@ -195,6 +197,15 @@ for iteration in range(1000):
     df_temp['size'] = df_voters.groupby('party_name')['party_ID'].count()
     df_parties = df_parties.append(df_temp.reset_index(), ignore_index=True,sort=False)
 
+#Write dataframes of results
+df_total_utility.to_csv('total_utility.csv')
+df_total_ln_utility.to_csv('total_ln_utility.csv')
+df_total_unsatisfied_utility.to_csv('total_unsatisfied_utility.csv')
+df_fully_satisfied_voters.to_csv('fully_satisfied_voters.csv')
+df_wasted_voters.to_csv('wasted_voters.csv')
+df_parties.to_csv('parties.csv')
+
+
 #plots metrics
 colors = ['b','r','k','#FFFF00','g','#808080','#56B4E9','#FF7F00']
 fig = plt.figure(figsize=(15,20))
@@ -250,15 +261,15 @@ lgd5 = ax5.legend(loc=2)
 ax5.set_xlabel('Wasted Voters')
 ax5.set_ylabel('Records in bin')
 
-ax6 = fig.add_subplot(3, 2, 6)
-ax6.scatter(df_parties['x'],df_parties['y'], marker='.', s=(df_parties['size']/10).astype('int'), c=df_parties['party_name'])
-ax6.set_xlim(-10, 10)
-ax6.set_ylim(-10, 10)
-ax6.set_xticks(range(-10, 11,2))
-ax6.set_yticks(range(-10, 11,2))
-ax6.set_title('Party Position')
-ax6.set_xlabel('Planned Economy  <--  Economics  -->  Free Market')
-ax6.set_ylabel('Liberal  <-- Government  --> Authoritarian')
+#ax6 = fig.add_subplot(3, 2, 6)
+#ax6.scatter(df_parties['x'],df_parties['y'], marker='.', s=(df_parties['size']/10).astype('int'), c=df_parties['party_name'])
+#ax6.set_xlim(-10, 10)
+#ax6.set_ylim(-10, 10)
+#ax6.set_xticks(range(-10, 11,2))
+#ax6.set_yticks(range(-10, 11,2))
+#ax6.set_title('Party Position')
+#ax6.set_xlabel('Planned Economy  <--  Economics  -->  Free Market')
+#ax6.set_ylabel('Liberal  <-- Government  --> Authoritarian')
 
 fig.savefig("Results.png",dpi = 300)
 

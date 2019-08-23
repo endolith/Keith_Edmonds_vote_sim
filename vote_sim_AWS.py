@@ -112,7 +112,7 @@ df_parties = pd.DataFrame(columns = ['x', 'y', 'size', 'party_name'])
 
 #Iterate over each simulation
 start_time = time()
-for iteration in range(20):
+for iteration in range(20000):
     if (iteration % 10 == 0) or iteration < 10:
         print('iteration: ' + str(iteration))
         print(datetime.datetime.now())

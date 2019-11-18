@@ -5,7 +5,7 @@ import matplotlib.image as mpimg
 from matplotlib.text import TextPath
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-# 
+import utils 
 # Types of problems to handle
 # https://www.rangevoting.org/AssetBC.html
 # https://groups.google.com/forum/#!topic/electionscience/Rk4ZGf-s-s8
@@ -202,104 +202,55 @@ if maximize:
     for index in S.index:
         S.loc[index,columns[index]] = 5
 
-#define seleciton algorithm
-def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transform = False):
-    
-    if KP_Transform:
-        S_wrk = pd.DataFrame([], columns = S_in.columns )
-        for i in [0,1,2,3,4]:
-            S_wrk = S_wrk.append(pd.DataFrame.from_records(np.where(S_in>i,1,0), columns = S_in.columns ))
-    else:    
-        S_wrk = S_in.divide(K)
-        
-    S_orig = S_wrk.copy()
-    score_remaining = np.ones(V)
-#     print('Selection type = ' + Selection)
-#     print('Reweight type = ' + Reweight)
-# 
-#     print('Hare Quota', V/W)
-#     print('Total Utility Remaining ',score_remaining.sum()) 
-    print('~~~~~~~~~~~~~~~~~~')
-    winner_list = []
-    while len(winner_list) < W:
-        #round
-        R = len(winner_list)
 
-        #select winner
-        #w = index with highest selection metric
-        if Selection == 'Monroe':
-            w = pd.DataFrame.from_records(np.sort(S_wrk.values, axis=0), columns = S_wrk.columns).tail(round(V/W)).sum().idxmax() 
-        elif Selection == 'Exponential':
-            total_sum =  S_orig[winner_list].sum(axis=1)
-            w = S_orig.pow(W-R).div(total_sum + 1.0, axis = 0).sum().idxmax()       
-        elif Selection == 'Utilitarian':          
-            w = S_wrk.sum().idxmax() 
-        else:
-            print('error: no selection criteria')
-        
-        #print( sum_scores)   
-                    
-        # print('Winner',w)
-            
-        winner_list.append(w)
-        
-        if Reweight == 'Unitary':
-            surplus_factor = max( S_wrk.sum()[w] *W/V , 1.0)
-        
-            #Score spent on each winner by each voter
-            score_spent = S_wrk[w]/ surplus_factor
-            # print('Score Spent ',score_spent.sum()) 
-            
-            #Total score left to be spent by each voter
-            score_remaining = np.clip(score_remaining-score_spent,0.0,1.0) 
-            # print('Score Remaining ',score_remaining.sum())
-            # print('------------------')
-            
-            #Update Ballots
-            #set scores to zero for winner so they don't win again
-            #S_wrk[w]=0
-            #Take score off of ballot (ie reweight)
-        
-            for c in S_wrk.columns:
-                S_wrk[c] = pd.DataFrame([S_wrk[c], score_remaining]).min()
-        elif Reweight == 'Divisor':        
-            total_sum =  S_orig[winner_list].sum(axis=1)
-            S_wrk = S_orig.div(total_sum + 1.0, axis = 0)     
-        else:
-            print('no reweight')                       
+#store metrics for each method
+total_utility = {}
+total_ln_utility = {}
+total_favored_winner_utility = {}
+total_unsatisfied_utility = {}
+fully_satisfied_voters = {}
+wasted_voters = {}
+utility_deviation = {}
+score_deviation = {}
+favored_winner_deviation = {}
+average_winner_polarization = {}
+most_polarized_winner = {}
+least_polarized_winner = {}
+
+metrics = {
+            'total_utility' : total_utility,
+            'total_ln_utility' : total_ln_utility,
+            'total_favored_winner_utility' : total_favored_winner_utility,
+            'total_unsatisfied_utility' : total_unsatisfied_utility,
+            'fully_satisfied_voters' : fully_satisfied_voters,
+            'wasted_voters' : wasted_voters,
+            'utility_deviation' : utility_deviation,
+            'score_deviation' : score_deviation,
+            'favored_winner_deviation' : favored_winner_deviation,
+            'average_winner_polarization' : average_winner_polarization,
+            'most_polarized_winner' : most_polarized_winner,
+            'least_polarized_winner' : least_polarized_winner,
+                                    }
+
+utilitarian_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Unitary')
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_unitary_winners, method = 'utilitarian_unitary', K=5)
+
+monroe_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Monroe',Reweight = 'Unitary')
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = monroe_unitary_winners, method = 'monroe_unitary', K=5)
+
+utilitarian_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Jefferson')
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_jefferson_winners, method = 'utilitarian_jefferson', K=5)
+
+monroe_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Monroe',Reweight = 'Jefferson') 
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = monroe_jefferson_winners, method = 'monroe_jefferson', K=5)
 
 
-    if KP_Transform:    
-        print(Selection + ' ' + Reweight + ' with KP transform Winner set is:')
-    else:
-        print(Selection + ' ' + Reweight + ' Winner set is:')
-    print(winner_list)
-    S_metrics = S_in.divide(K)
-    print('Total Utility = ',S_metrics[winner_list].sum(axis=1).sum())
-    print('Total ln(Utility) = ',np.log1p(S_metrics[winner_list].sum(axis=1)).sum())
-    print('Total UnSatisfied Utility = ', sum([1-i for i in S_metrics[winner_list].sum(axis=1) if i < 1]))
-    print('Fully Satisfied voters = ', sum([(i>=1) for i in S_metrics[winner_list].sum(axis=1)]))
-    print('Wasted voters = ', sum([(i==0) for i in S_metrics[winner_list].sum(axis=1)]))
-    print(' ') 
-       
-    return winner_list
+results = pd.DataFrame.from_dict(metrics)
 
-utilitarian_unitary_winners = get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Unitary')
-monroe_unitary_winners = get_winners(S_in=S.copy(),Selection = 'Monroe',Reweight = 'Unitary')
-utilitarian_harmonic_winners = get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Divisor')
-utilitarian_harmonic_winners_KP = get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Divisor', KP_Transform = True)
-monroe_harmonic_winners = get_winners(S_in=S.copy(),Selection = 'Monroe',Reweight = 'Divisor') 
-exponential_winners = get_winners(S_in=S.copy(),Selection = 'Exponential' ,Reweight = 'none')  
-
-# print('SUMMARY')  
-# print('Utilitarian Unitary Winner set is:')
-# print(utilitarian_unitary_winners)
-# print('Monroe Unitary Winner set is:')
-# print(monroe_unitary_winners)
-# print('Utilitarian Harmonic Winner set is:')       
-# print(utilitarian_harmonic_winners)
-# print('Monroe Harmonic Winner set is:')
-# print(monroe_harmonic_winners)
+for col in results.columns:
+    print('---------------------------')
+    print(results[col])
+    print(' ')
 
 plt.show()
 

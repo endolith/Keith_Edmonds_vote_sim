@@ -16,7 +16,7 @@ centerists = False
 maximize = True
 
 #Number of winners
-W = 4.0
+W = 5.0
 
 #the maximum possible score is 5
 K = 5.0
@@ -202,48 +202,47 @@ if maximize:
     for index in S.index:
         S.loc[index,columns[index]] = 5
 
+# 
+winners = {}
+metrics = {}
 
-#store metrics for each method
-total_utility = {}
-total_ln_utility = {}
-total_favored_winner_utility = {}
-total_unsatisfied_utility = {}
-fully_satisfied_voters = {}
-wasted_voters = {}
-utility_deviation = {}
-score_deviation = {}
-favored_winner_deviation = {}
-average_winner_polarization = {}
-most_polarized_winner = {}
-least_polarized_winner = {}
+utilitarian_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Unitary', K=K, W=W)
+winners['utilitarian_unitary_winners'] = utilitarian_unitary_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_unitary_winners, method = 'utilitarian_unitary', K=K)
 
-metrics = {
-            'total_utility' : total_utility,
-            'total_ln_utility' : total_ln_utility,
-            'total_favored_winner_utility' : total_favored_winner_utility,
-            'total_unsatisfied_utility' : total_unsatisfied_utility,
-            'fully_satisfied_voters' : fully_satisfied_voters,
-            'wasted_voters' : wasted_voters,
-            'utility_deviation' : utility_deviation,
-            'score_deviation' : score_deviation,
-            'favored_winner_deviation' : favored_winner_deviation,
-            'average_winner_polarization' : average_winner_polarization,
-            'most_polarized_winner' : most_polarized_winner,
-            'least_polarized_winner' : least_polarized_winner,
-                                    }
+hare_voters_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Voters',Reweight = 'Unitary', K=K, W=W)
+winners['hare_voters_unitary_winners'] = hare_voters_unitary_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_voters_unitary_winners, method = 'hare_voters_unitary', K=K)
 
-utilitarian_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Unitary')
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_unitary_winners, method = 'utilitarian_unitary', K=5)
+hare_ballots_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Unitary', K=K, W=W)
+winners['hare_ballots_unitary_winners'] = hare_ballots_unitary_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_ballots_unitary_winners, method = 'hare_ballots_unitary', K=K)
 
-monroe_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Monroe',Reweight = 'Unitary')
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = monroe_unitary_winners, method = 'monroe_unitary', K=5)
+utilitarian_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Jefferson', K=K, W=W)
+winners['utilitarian_jefferson_winners'] = utilitarian_jefferson_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_jefferson_winners, method = 'utilitarian_jefferson', K=K)
 
-utilitarian_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Jefferson')
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_jefferson_winners, method = 'utilitarian_jefferson', K=5)
+hare_voters_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Voters',Reweight = 'Jefferson', K=K, W=W) 
+winners['hare_voters_jefferson_winners'] = hare_voters_jefferson_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_voters_jefferson_winners, method = 'hare_voters_jefferson', K=K)
 
-monroe_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Monroe',Reweight = 'Jefferson') 
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = monroe_jefferson_winners, method = 'monroe_jefferson', K=5)
+hare_ballots_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Jefferson', K=K, W=W) 
+winners['hare_ballots_jefferson_winners'] = hare_ballots_jefferson_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_ballots_jefferson_winners, method = 'hare_ballots_jefferson', K=K)
 
+utilitarian_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Allocate', K=K, W=W)
+winners['utilitarian_allocate_winners'] = utilitarian_allocate_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_allocate_winners, method = 'utilitarian_allocate', K=K)
+
+hare_voters_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Voters',Reweight = 'Allocate', K=K, W=W) 
+winners['hare_voters_allocate_winners'] = hare_voters_allocate_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_voters_allocate_winners, method = 'hare_voters_allocate', K=K)
+
+hare_ballots_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Allocate', K=K, W=W) 
+winners['hare_ballots_allocate_winners'] = hare_ballots_allocate_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_ballots_allocate_winners, method = 'hare_ballots_allocate', K=K)
+
+print(pd.DataFrame.from_dict(winners).T)
 
 results = pd.DataFrame.from_dict(metrics)
 

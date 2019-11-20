@@ -26,20 +26,47 @@ K = 5     # The maximum possible score is 5
 V = 10000 # Number of voters
 
 #Define Data frames to store the results of each iteration
-methods = ['utilitarian_unitary','monroe_unitary','utilitarian_jefferson','utilitarian_jefferson_kp','monroe_jefferson']
+Methods = {}
 
-df_total_utility = pd.DataFrame(columns=methods)
-df_total_ln_utility = pd.DataFrame(columns=methods)
-df_total_favored_winner_utility = pd.DataFrame(columns=methods) 
-df_total_unsatisfied_utility = pd.DataFrame(columns=methods)
-df_fully_satisfied_voters = pd.DataFrame(columns=methods)
-df_wasted_voters = pd.DataFrame(columns=methods)
-df_utility_deviation = pd.DataFrame(columns=methods)
-df_score_deviation = pd.DataFrame(columns=methods)
-df_favored_winner_deviation = pd.DataFrame(columns=methods)
-df_average_winner_polarization = pd.DataFrame(columns=methods)
-df_most_polarized_winner = pd.DataFrame(columns=methods)
-df_least_polarized_winner = pd.DataFrame(columns=methods)
+Methods['utilitarian_unitary'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Unitary', 'KP_Transform' : False}
+Methods['hare_voters_unitary'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Unitary', 'KP_Transform' : False}
+Methods['hare_ballots_unitary'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Unitary', 'KP_Transform' : False}
+
+Methods['utilitarian_jefferson'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
+Methods['hare_voters_jefferson'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
+Methods['hare_ballots_jefferson'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
+
+Methods['utilitarian_allocate'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : False}
+Methods['hare_voters_allocate'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Allocate', 'KP_Transform' : False}
+Methods['hare_ballots_allocate'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : False}    
+# 
+# Methods['utilitarian_unitary_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Unitary', 'KP_Transform' : True}
+# Methods['hare_voters_unitary_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Unitary', 'KP_Transform' : True}
+# Methods['hare_ballots_unitary_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Unitary', 'KP_Transform' : True}
+# 
+# Methods['utilitarian_jefferson_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
+# Methods['hare_voters_jefferson_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
+# Methods['hare_ballots_jefferson_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
+# 
+# Methods['utilitarian_allocate_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : True}
+# Methods['hare_voters_allocate_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Allocate', 'KP_Transform' : True}
+# Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : True}   
+
+
+method_list = sorted(list(Methods.keys()))
+
+df_total_utility = pd.DataFrame(columns=method_list)
+df_total_ln_utility = pd.DataFrame(columns=method_list)
+df_total_favored_winner_utility = pd.DataFrame(columns=method_list) 
+df_total_unsatisfied_utility = pd.DataFrame(columns=method_list)
+df_fully_satisfied_voters = pd.DataFrame(columns=method_list)
+df_wasted_voters = pd.DataFrame(columns=method_list)
+df_utility_deviation = pd.DataFrame(columns=method_list)
+df_score_deviation = pd.DataFrame(columns=method_list)
+df_favored_winner_deviation = pd.DataFrame(columns=method_list)
+df_average_winner_polarization = pd.DataFrame(columns=method_list)
+df_most_polarized_winner = pd.DataFrame(columns=method_list)
+df_least_polarized_winner = pd.DataFrame(columns=method_list)
 
 df_parties = pd.DataFrame(columns = ['x', 'y', 'size', 'party_name'])
 
@@ -94,65 +121,26 @@ for iteration in range(25000):
     scores[np.arange(len(scores)), np.argmin(dists, 1)] = 5
     S = pd.DataFrame(scores, columns=df_can.values[:, 2])
 
-    #store metrics for each method
-    total_utility = {}
-    total_ln_utility = {}
-    total_favored_winner_utility = {}
-    total_unsatisfied_utility = {}
-    fully_satisfied_voters = {}
-    wasted_voters = {}
-    utility_deviation = {}
-    score_deviation = {}
-    favored_winner_deviation = {}
-    average_winner_polarization = {}
-    most_polarized_winner = {}
-    least_polarized_winner = {}
-
-    metrics = {
-                'total_utility' : total_utility,
-                'total_ln_utility' : total_ln_utility,
-                'total_favored_winner_utility' : total_favored_winner_utility,
-                'total_unsatisfied_utility' : total_unsatisfied_utility,
-                'fully_satisfied_voters' : fully_satisfied_voters,
-                'wasted_voters' : wasted_voters,
-                'utility_deviation' : utility_deviation,
-                'score_deviation' : score_deviation,
-                'favored_winner_deviation' : favored_winner_deviation,
-                'average_winner_polarization' : average_winner_polarization,
-                'most_polarized_winner' : most_polarized_winner,
-                'least_polarized_winner' : least_polarized_winner,
-                                        }
+    metrics = {}
     
     #Run methods and get metrics
-    winner_list = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Unitary') 
-    metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = winner_list, method = 'utilitarian_unitary', K=5)
-
-    winner_list = utils.get_winners(S_in=S.copy(),Selection = 'Monroe',Reweight = 'Unitary')
-    metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = winner_list, method = 'monroe_unitary', K=5)
-
-    winner_list = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Jefferson') 
-    metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = winner_list, method = 'utilitarian_jefferson', K=5)
-    
-    winner_list = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Jefferson', KP_Transform = True) 
-    metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = winner_list, method = 'utilitarian_jefferson_kp', K=5)
-    
-    winner_list = utils.get_winners(S_in=S.copy(),Selection = 'Monroe',Reweight = 'Jefferson') 
-    metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = winner_list, method = 'monroe_jefferson', K=5)
-    
+    for method,value in Methods.items():
+        winner_list = utils.get_winners(S_in=S.copy(),Selection = value['Selection'],Reweight = value['Reweight'], KP_Transform = value['KP_Transform'], K=K, W=W) 
+        metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = winner_list, method = method, K=K)  
     
     #Add metrics to dataframes
-    df_total_utility = df_total_utility.append(total_utility, ignore_index=True)
-    df_total_ln_utility = df_total_ln_utility.append(total_ln_utility, ignore_index=True)
-    df_total_favored_winner_utility = df_total_favored_winner_utility.append(total_favored_winner_utility, ignore_index=True)    
-    df_total_unsatisfied_utility = df_total_unsatisfied_utility.append(total_unsatisfied_utility, ignore_index=True)
-    df_fully_satisfied_voters = df_fully_satisfied_voters.append(fully_satisfied_voters, ignore_index=True)
-    df_wasted_voters = df_wasted_voters.append(wasted_voters, ignore_index=True)
-    df_utility_deviation = df_utility_deviation.append(utility_deviation, ignore_index=True)
-    df_score_deviation = df_score_deviation.append(score_deviation, ignore_index=True)
-    df_favored_winner_deviation = df_favored_winner_deviation.append(favored_winner_deviation, ignore_index=True)
-    df_average_winner_polarization = df_average_winner_polarization.append(average_winner_polarization, ignore_index=True)
-    df_most_polarized_winner = df_most_polarized_winner.append(most_polarized_winner, ignore_index=True)
-    df_least_polarized_winner = df_least_polarized_winner.append(least_polarized_winner, ignore_index=True)
+    df_total_utility = df_total_utility.append(metrics['total_utility'], ignore_index=True)
+    df_total_ln_utility = df_total_ln_utility.append(metrics['total_ln_utility'], ignore_index=True)
+    df_total_favored_winner_utility = df_total_favored_winner_utility.append(metrics['total_favored_winner_utility'], ignore_index=True)    
+    df_total_unsatisfied_utility = df_total_unsatisfied_utility.append(metrics['total_unsatisfied_utility'], ignore_index=True)
+    df_fully_satisfied_voters = df_fully_satisfied_voters.append(metrics['fully_satisfied_voters'], ignore_index=True)
+    df_wasted_voters = df_wasted_voters.append(metrics['wasted_voters'], ignore_index=True)
+    df_utility_deviation = df_utility_deviation.append(metrics['utility_deviation'], ignore_index=True)
+    df_score_deviation = df_score_deviation.append(metrics['score_deviation'], ignore_index=True)
+    df_favored_winner_deviation = df_favored_winner_deviation.append(metrics['favored_winner_deviation'], ignore_index=True)
+    df_average_winner_polarization = df_average_winner_polarization.append(metrics['average_winner_polarization'], ignore_index=True)
+    df_most_polarized_winner = df_most_polarized_winner.append(metrics['most_polarized_winner'], ignore_index=True)
+    df_least_polarized_winner = df_least_polarized_winner.append(metrics['least_polarized_winner'], ignore_index=True)
 
     #Keep track of simulation points
     df_temp = df_voters.groupby('party_name')['x','y'].mean()
@@ -160,82 +148,72 @@ for iteration in range(25000):
     df_parties = df_parties.append(df_temp.reset_index(), ignore_index=True,sort=False)
 
 #Write dataframes of results
-df_total_utility.to_csv('total_utility.csv')
-df_total_ln_utility.to_csv('total_ln_utility.csv')
-df_total_favored_winner_utility.to_csv('total_favored_winner_utility.csv')
-df_total_unsatisfied_utility.to_csv('total_unsatisfied_utility.csv')
-df_fully_satisfied_voters.to_csv('fully_satisfied_voters.csv')
-df_wasted_voters.to_csv('wasted_voters.csv')
-df_utility_deviation.to_csv('utility_deviation.csv')
-df_score_deviation.to_csv('score_deviation.csv')
-df_favored_winner_deviation.to_csv('favored_winner_deviation.csv')
-df_average_winner_polarization.to_csv('average_winner_polarization.csv')
-df_most_polarized_winner.to_csv('most_polarized_winner.csv')
-df_least_polarized_winner.to_csv('least_polarized_winner.csv')
-df_parties.to_csv('parties.csv')
+df_total_utility.to_csv('total_utility.csv',index=False)
+df_total_ln_utility.to_csv('total_ln_utility.csv',index=False)
+df_total_favored_winner_utility.to_csv('total_favored_winner_utility.csv',index=False)
+df_total_unsatisfied_utility.to_csv('total_unsatisfied_utility.csv',index=False)
+df_fully_satisfied_voters.to_csv('fully_satisfied_voters.csv',index=False)
+df_wasted_voters.to_csv('wasted_voters.csv',index=False)
+df_utility_deviation.to_csv('utility_deviation.csv',index=False)
+df_score_deviation.to_csv('score_deviation.csv',index=False)
+df_favored_winner_deviation.to_csv('favored_winner_deviation.csv',index=False)
+df_average_winner_polarization.to_csv('average_winner_polarization.csv',index=False)
+df_most_polarized_winner.to_csv('most_polarized_winner.csv',index=False)
+df_least_polarized_winner.to_csv('least_polarized_winner.csv',index=False)
+df_parties.to_csv('parties.csv',index=False)
 
-#plots metrics
-colors = ['b','r','k','#FFFF00','g','#808080','#56B4E9','#FF7F00']
+# method_subset = ['hare_ballots_allocate','hare_voters_allocate','utilitarian_allocate', 'utilitarian_jefferson','utilitarian_unitary']
+# df_total_utility = pd.read_csv('total_utility.csv')[method_subset]
+# df_total_ln_utility = pd.read_csv('total_ln_utility.csv')[method_subset]
+# df_total_favored_winner_utility = pd.read_csv('total_favored_winner_utility.csv')[method_subset]
+# df_total_unsatisfied_utility = pd.read_csv('total_unsatisfied_utility.csv')[method_subset]
+# df_fully_satisfied_voters = pd.read_csv('fully_satisfied_voters.csv')[method_subset]
+# df_wasted_voters = pd.read_csv('wasted_voters.csv')[method_subset]
+# df_utility_deviation = pd.read_csv('utility_deviation.csv')[method_subset]
+# df_score_deviation = pd.read_csv('score_deviation.csv')[method_subset]
+# df_favored_winner_deviation = pd.read_csv('favored_winner_deviation.csv')[method_subset]
+# df_average_winner_polarization = pd.read_csv('average_winner_polarization.csv')[method_subset]
+# df_most_polarized_winner = pd.read_csv('most_polarized_winner.csv')[method_subset]
+# df_least_polarized_winner = pd.read_csv('least_polarized_winner.csv')[method_subset]
+# df_parties = pd.read_csv('parties.csv')
+
+#make plots
 
 fig = plt.figure(figsize=(15,20))
 fig.suptitle('Utility Metrics')
 
 ax1 = fig.add_subplot(3, 2, 1)
-for i, col in enumerate(df_total_utility.columns):
-    count, bins, ignored = ax1.hist(list(df_total_utility[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%.0f$\n$\sigma=%.0f$'%(df_total_utility[col].mean(), df_total_utility[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    ax1.text(0.98, 0.95-0.1*i, textstr, transform=ax1.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+ax1 = utils.plot_metric(df = df_total_utility, Methods = Methods,axis=ax1,is_int = True)
 lgd1 = ax1.legend(loc=2)
 ax1.set_xlabel('Total Utility')
 ax1.set_ylabel('Records in bin')
 
 ax2 = fig.add_subplot(3, 2, 2)
-for i, col in enumerate(df_total_ln_utility.columns):
-    count, bins, ignored = ax2.hist(list(df_total_ln_utility[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%.0f$\n$\sigma=%.0f$'%(df_total_ln_utility[col].mean(), df_total_ln_utility[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    ax2.text(0.98, 0.95-0.1*i, textstr, transform=ax2.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+ax2 = utils.plot_metric(df = df_total_ln_utility, Methods = Methods,axis=ax2,is_int = True)
 lgd2 = ax2.legend(loc=2)
 ax2.set_xlabel('Total Log Utility')
 ax2.set_ylabel('Records in bin')
 
 ax3 = fig.add_subplot(3, 2, 3)
-for i, col in enumerate(df_total_favored_winner_utility.columns):
-    count, bins, ignored = ax3.hist(list(df_total_favored_winner_utility[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%.0f$\n$\sigma=%.0f$'%(df_total_favored_winner_utility[col].mean(), df_total_favored_winner_utility[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    ax3.text(0.98, 0.95-0.1*i, textstr, transform=ax3.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+ax3 = utils.plot_metric(df = df_total_favored_winner_utility, Methods = Methods,axis=ax3,is_int = True)
 lgd3 = ax3.legend(loc=2)
 ax3.set_xlabel('Total Favored Winner Utility')
 ax3.set_ylabel('Records in bin')
 
 ax4 = fig.add_subplot(3, 2, 4)
-for i, col in enumerate(df_total_unsatisfied_utility.columns):
-    count, bins, ignored = ax4.hist(list(df_total_unsatisfied_utility[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%.0f$\n$\sigma=%.0f$'%(df_total_unsatisfied_utility[col].mean(), df_total_unsatisfied_utility[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    ax4.text(0.98, 0.95-0.1*i, textstr, transform=ax4.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+ax4 = utils.plot_metric(df = df_total_unsatisfied_utility, Methods = Methods,axis=ax4,is_int = True)
 lgd4 = ax4.legend(loc=2)
 ax4.set_xlabel('Total Unsatisfied Utility')
 ax4.set_ylabel('Records in bin')
 
 ax5 = fig.add_subplot(3, 2, 5)
-for i, col in enumerate(df_fully_satisfied_voters.columns):
-    count, bins, ignored = ax5.hist(list(df_fully_satisfied_voters[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%.0f$\n$\sigma=%.0f$'%(df_fully_satisfied_voters[col].mean(), df_fully_satisfied_voters[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    ax5.text(0.98, 0.95-0.1*i, textstr, transform=ax5.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+ax5 = utils.plot_metric(df = df_fully_satisfied_voters, Methods = Methods,axis=ax5,is_int = True)
 lgd5 = ax5.legend(loc=2)
 ax5.set_xlabel('Fully Satisfied Voters')
 ax5.set_ylabel('Records in bin')
 
 ax6 = fig.add_subplot(3, 2, 6)
-for i, col in enumerate(df_wasted_voters.columns):
-    count, bins, ignored = ax6.hist(list(df_wasted_voters[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%.0f$\n$\sigma=%.0f$'%(df_wasted_voters[col].mean(), df_wasted_voters[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    ax6.text(0.98, 0.95-0.1*i, textstr, transform=ax6.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+ax6 = utils.plot_metric(df = df_wasted_voters, Methods = Methods,axis=ax6,is_int = True)
 lgd6 = ax6.legend(loc=2)
 ax6.set_xlabel('Wasted Voters')
 ax6.set_ylabel('Records in bin')
@@ -246,61 +224,37 @@ figB = plt.figure(figsize=(15,20))
 figB.suptitle('Equity Metrics')
 
 axB1 = figB.add_subplot(3, 2, 1)
-for i, col in enumerate(df_utility_deviation.columns):
-    count, bins, ignored = axB1.hist(list(df_utility_deviation[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%0.3f$\n$\sigma=%0.3f$'%(df_utility_deviation[col].mean(), df_utility_deviation[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    axB1.text(0.98, 0.95-0.1*i, textstr, transform=axB1.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
-lgd1 = axB1.legend(loc=2)
+axB1 = utils.plot_metric(df = df_utility_deviation, Methods = Methods,axis=axB1,is_int = False)
+lgd2 = axB1.legend(loc=2)
 axB1.set_xlabel('Utility Deviation')
 axB1.set_ylabel('Records in bin')
 
 axB2 = figB.add_subplot(3, 2, 2)
-for i, col in enumerate(df_score_deviation.columns):
-    count, bins, ignored = axB2.hist(list(df_score_deviation[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%0.3f$\n$\sigma=%0.3f$'%(df_score_deviation[col].mean(), df_score_deviation[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    axB2.text(0.98, 0.95-0.1*i, textstr, transform=axB2.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+axB2 = utils.plot_metric(df = df_score_deviation, Methods = Methods,axis=axB2,is_int = False)
 lgd2 = axB2.legend(loc=2)
 axB2.set_xlabel('Score Deviation')
 axB2.set_ylabel('Records in bin')
 
 axB3 = figB.add_subplot(3, 2, 3)
-for i, col in enumerate(df_favored_winner_deviation.columns):
-    count, bins, ignored = axB3.hist(list(df_favored_winner_deviation[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%0.3f$\n$\sigma=%0.3f$'%(df_favored_winner_deviation[col].mean(), df_favored_winner_deviation[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    axB3.text(0.98, 0.95-0.1*i, textstr, transform=axB3.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+axB3 = utils.plot_metric(df = df_favored_winner_deviation, Methods = Methods,axis=axB3,is_int = False)
 lgd3 = axB3.legend(loc=2)
 axB3.set_xlabel('Favored Winner Deviation')
 axB3.set_ylabel('Records in bin')
 
 axB4 = figB.add_subplot(3, 2, 4)
-for i, col in enumerate(df_average_winner_polarization.columns):
-    count, bins, ignored = axB4.hist(list(df_average_winner_polarization[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%0.3f$\n$\sigma=%0.3f$'%(df_average_winner_polarization[col].mean(), df_average_winner_polarization[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    axB4.text(0.98, 0.95-0.1*i, textstr, transform=axB4.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+axB4 = utils.plot_metric(df = df_average_winner_polarization, Methods = Methods,axis=axB4,is_int = False)
 lgd4 = axB4.legend(loc=2)
 axB4.set_xlabel('Average Winner Polarization')
 axB4.set_ylabel('Records in bin')
 
 axB5 = figB.add_subplot(3, 2, 5)
-for i, col in enumerate(df_most_polarized_winner.columns):
-    count, bins, ignored = axB5.hist(list(df_most_polarized_winner[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%0.3f$\n$\sigma=%0.3f$'%(df_most_polarized_winner[col].mean(), df_most_polarized_winner[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    axB5.text(0.98, 0.95-0.1*i, textstr, transform=axB5.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+axB5 = utils.plot_metric(df = df_most_polarized_winner, Methods = Methods,axis=axB5,is_int = False)
 lgd5 = axB5.legend(loc=2)
 axB5.set_xlabel('Most Polarized Winner')
 axB5.set_ylabel('Records in bin')
 
 axB6 = figB.add_subplot(3, 2, 6)
-for i, col in enumerate(df_least_polarized_winner.columns):
-    count, bins, ignored = axB6.hist(list(df_least_polarized_winner[col]), 50, color=colors[i] ,histtype = 'step', label=col)
-    textstr = '$\mu=%0.3f$\n$\sigma=%0.3f$'%(df_least_polarized_winner[col].mean(), df_least_polarized_winner[col].std())
-    props = dict(boxstyle='round', facecolor='white', ec=colors[i], alpha=0.8)
-    axB6.text(0.98, 0.95-0.1*i, textstr, transform=axB6.transAxes, bbox=props, verticalalignment='top',horizontalalignment='right')
+axB6 = utils.plot_metric(df = df_least_polarized_winner, Methods = Methods,axis=axB6,is_int = False)
 lgd6 = axB6.legend(loc=2)
 axB6.set_xlabel('Least Polarized Winner')
 axB6.set_ylabel('Records in bin')
@@ -333,5 +287,5 @@ figC.savefig("Simulated_Spectrum.png",dpi = 300)
 
 print('done')
 
-sys.stdout = term
-f.close()
+# sys.stdout = term
+# f.close()

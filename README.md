@@ -86,3 +86,7 @@ Harmonic Voting:
 https://www.rangevoting.org/QualityMulti.html
 This like any other optimal system is likely too computationally expensive
 
+STAR Selection:
+https://en.wikipedia.org/wiki/STAR_voting
+This is may be better than pure utilitarian
+

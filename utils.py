@@ -106,10 +106,11 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
         total_favored_winner_utility = {}
         total_unsatisfied_utility = {}
         fully_satisfied_voters = {}
-        wasted_voters = {}
+        totally_unsatisfied_voters = {}
         utility_deviation = {}
         score_deviation = {}
         favored_winner_deviation = {}
+        number_of_duplicates = {}
         average_winner_polarization = {}
         most_polarized_winner = {}
         least_polarized_winner = {}
@@ -120,10 +121,11 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
                     'total_favored_winner_utility' : total_favored_winner_utility,
                     'total_unsatisfied_utility' : total_unsatisfied_utility,
                     'fully_satisfied_voters' : fully_satisfied_voters,
-                    'wasted_voters' : wasted_voters,
+                    'totally_unsatisfied_voters' : totally_unsatisfied_voters,
                     'utility_deviation' : utility_deviation,
                     'score_deviation' : score_deviation,
                     'favored_winner_deviation' : favored_winner_deviation,
+                    'number_of_duplicates' : number_of_duplicates,
                     'average_winner_polarization' : average_winner_polarization,
                     'most_polarized_winner' : most_polarized_winner,
                     'least_polarized_winner' : least_polarized_winner,
@@ -135,10 +137,11 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
     metrics['total_favored_winner_utility'][method] = S_metrics[winner_list].max(axis=1).sum()
     metrics['total_unsatisfied_utility'][method] = sum([1-i for i in S_metrics[winner_list].sum(axis=1) if i < 1])
     metrics['fully_satisfied_voters'][method] = sum([(i>=1) for i in S_metrics[winner_list].sum(axis=1)])
-    metrics['wasted_voters'][method] = sum([(i==0) for i in S_metrics[winner_list].sum(axis=1)])
+    metrics['totally_unsatisfied_voters'][method] = sum([(i==0) for i in S_metrics[winner_list].sum(axis=1)])
     metrics['utility_deviation'][method] = S_metrics[winner_list].sum(axis=1).std()
     metrics['score_deviation'][method] = S_metrics[winner_list].values.flatten().std()
     metrics['favored_winner_deviation'][method] = S_metrics[winner_list].max(axis=1).std()
+    metrics['number_of_duplicates'][method] = len(winner_list) -len(set(winner_list))
     metrics['average_winner_polarization'][method] = S_metrics[winner_list].std(axis=0).mean()
     metrics['most_polarized_winner'][method] = S_metrics[winner_list].std(axis=0).max()
     metrics['least_polarized_winner'][method] = S_metrics[winner_list].std(axis=0).min()

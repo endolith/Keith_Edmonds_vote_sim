@@ -60,10 +60,11 @@ df_total_ln_utility = pd.DataFrame(columns=method_list)
 df_total_favored_winner_utility = pd.DataFrame(columns=method_list) 
 df_total_unsatisfied_utility = pd.DataFrame(columns=method_list)
 df_fully_satisfied_voters = pd.DataFrame(columns=method_list)
-df_wasted_voters = pd.DataFrame(columns=method_list)
+df_totally_unsatisfied_voters = pd.DataFrame(columns=method_list)
 df_utility_deviation = pd.DataFrame(columns=method_list)
 df_score_deviation = pd.DataFrame(columns=method_list)
 df_favored_winner_deviation = pd.DataFrame(columns=method_list)
+df_number_of_duplicates = pd.DataFrame(columns=method_list)
 df_average_winner_polarization = pd.DataFrame(columns=method_list)
 df_most_polarized_winner = pd.DataFrame(columns=method_list)
 df_least_polarized_winner = pd.DataFrame(columns=method_list)
@@ -134,10 +135,11 @@ for iteration in range(25000):
     df_total_favored_winner_utility = df_total_favored_winner_utility.append(metrics['total_favored_winner_utility'], ignore_index=True)    
     df_total_unsatisfied_utility = df_total_unsatisfied_utility.append(metrics['total_unsatisfied_utility'], ignore_index=True)
     df_fully_satisfied_voters = df_fully_satisfied_voters.append(metrics['fully_satisfied_voters'], ignore_index=True)
-    df_wasted_voters = df_wasted_voters.append(metrics['wasted_voters'], ignore_index=True)
+    df_totally_unsatisfied_voters = df_totally_unsatisfied_voters.append(metrics['totally_unsatisfied_voters'], ignore_index=True)
     df_utility_deviation = df_utility_deviation.append(metrics['utility_deviation'], ignore_index=True)
     df_score_deviation = df_score_deviation.append(metrics['score_deviation'], ignore_index=True)
     df_favored_winner_deviation = df_favored_winner_deviation.append(metrics['favored_winner_deviation'], ignore_index=True)
+    df_number_of_duplicates = df_number_of_duplicates.append(metrics['number_of_duplicates'], ignore_index=True)
     df_average_winner_polarization = df_average_winner_polarization.append(metrics['average_winner_polarization'], ignore_index=True)
     df_most_polarized_winner = df_most_polarized_winner.append(metrics['most_polarized_winner'], ignore_index=True)
     df_least_polarized_winner = df_least_polarized_winner.append(metrics['least_polarized_winner'], ignore_index=True)
@@ -153,10 +155,11 @@ df_total_ln_utility.to_csv('total_ln_utility.csv',index=False)
 df_total_favored_winner_utility.to_csv('total_favored_winner_utility.csv',index=False)
 df_total_unsatisfied_utility.to_csv('total_unsatisfied_utility.csv',index=False)
 df_fully_satisfied_voters.to_csv('fully_satisfied_voters.csv',index=False)
-df_wasted_voters.to_csv('wasted_voters.csv',index=False)
+df_totally_unsatisfied_voters.to_csv('totally_unsatisfied_voters.csv',index=False)
 df_utility_deviation.to_csv('utility_deviation.csv',index=False)
 df_score_deviation.to_csv('score_deviation.csv',index=False)
 df_favored_winner_deviation.to_csv('favored_winner_deviation.csv',index=False)
+df_number_of_duplicates.to_csv('number_of_duplicates.csv',index=False)
 df_average_winner_polarization.to_csv('average_winner_polarization.csv',index=False)
 df_most_polarized_winner.to_csv('most_polarized_winner.csv',index=False)
 df_least_polarized_winner.to_csv('least_polarized_winner.csv',index=False)
@@ -168,10 +171,11 @@ df_parties.to_csv('parties.csv',index=False)
 # df_total_favored_winner_utility = pd.read_csv('total_favored_winner_utility.csv')[method_subset]
 # df_total_unsatisfied_utility = pd.read_csv('total_unsatisfied_utility.csv')[method_subset]
 # df_fully_satisfied_voters = pd.read_csv('fully_satisfied_voters.csv')[method_subset]
-# df_wasted_voters = pd.read_csv('wasted_voters.csv')[method_subset]
+# df_totally_unsatisfied_voters = pd.read_csv('totally_unsatisfied_voters.csv')[method_subset]
 # df_utility_deviation = pd.read_csv('utility_deviation.csv')[method_subset]
 # df_score_deviation = pd.read_csv('score_deviation.csv')[method_subset]
 # df_favored_winner_deviation = pd.read_csv('favored_winner_deviation.csv')[method_subset]
+# df_number_of_duplicates = pd.read_csv('number_of_duplicates.csv')[method_subset]
 # df_average_winner_polarization = pd.read_csv('average_winner_polarization.csv')[method_subset]
 # df_most_polarized_winner = pd.read_csv('most_polarized_winner.csv')[method_subset]
 # df_least_polarized_winner = pd.read_csv('least_polarized_winner.csv')[method_subset]
@@ -213,9 +217,9 @@ ax5.set_xlabel('Fully Satisfied Voters')
 ax5.set_ylabel('Records in bin')
 
 ax6 = fig.add_subplot(3, 2, 6)
-ax6 = utils.plot_metric(df = df_wasted_voters, Methods = Methods,axis=ax6,is_int = True)
+ax6 = utils.plot_metric(df = df_totally_unsatisfied_voters, Methods = Methods,axis=ax6,is_int = True)
 lgd6 = ax6.legend(loc=2)
-ax6.set_xlabel('Wasted Voters')
+ax6.set_xlabel('Totally Unsatisfied Voters')
 ax6.set_ylabel('Records in bin')
 
 fig.savefig("Utility_Results.png",dpi = 300)
@@ -242,16 +246,23 @@ axB3.set_xlabel('Favored Winner Deviation')
 axB3.set_ylabel('Records in bin')
 
 axB4 = figB.add_subplot(3, 2, 4)
-axB4 = utils.plot_metric(df = df_average_winner_polarization, Methods = Methods,axis=axB4,is_int = False)
+axB4 = utils.plot_metric(df = df_number_of_duplicates, Methods = Methods,axis=axB4,is_int = True)
 lgd4 = axB4.legend(loc=2)
-axB4.set_xlabel('Average Winner Polarization')
+axB4.set_xlabel('Number of Duplicate Winners')
 axB4.set_ylabel('Records in bin')
 
 axB5 = figB.add_subplot(3, 2, 5)
-axB5 = utils.plot_metric(df = df_most_polarized_winner, Methods = Methods,axis=axB5,is_int = False)
+axB5 = utils.plot_metric(df = df_average_winner_polarization, Methods = Methods,axis=axB5,is_int = False)
 lgd5 = axB5.legend(loc=2)
-axB5.set_xlabel('Most Polarized Winner')
+axB5.set_xlabel('Average Winner Polarization')
 axB5.set_ylabel('Records in bin')
+
+# This metric is not very useful since most systems have the same most polarized winner
+# axB5 = figB.add_subplot(3, 2, 5)
+# axB5 = utils.plot_metric(df = df_most_polarized_winner, Methods = Methods,axis=axB5,is_int = False)
+# lgd5 = axB5.legend(loc=2)
+# axB5.set_xlabel('Most Polarized Winner')
+# axB5.set_ylabel('Records in bin')
 
 axB6 = figB.add_subplot(3, 2, 6)
 axB6 = utils.plot_metric(df = df_least_polarized_winner, Methods = Methods,axis=axB6,is_int = False)

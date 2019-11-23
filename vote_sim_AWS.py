@@ -165,22 +165,6 @@ df_most_polarized_winner.to_csv('most_polarized_winner.csv',index=False)
 df_least_polarized_winner.to_csv('least_polarized_winner.csv',index=False)
 df_parties.to_csv('parties.csv',index=False)
 
-# # method_subset = ['hare_ballots_allocate','hare_voters_allocate','utilitarian_allocate', 'utilitarian_jefferson','utilitarian_unitary']
-# method_subset = method_list
-# df_total_utility = pd.read_csv('total_utility.csv')[method_subset]
-# df_total_ln_utility = pd.read_csv('total_ln_utility.csv')[method_subset]
-# df_total_favored_winner_utility = pd.read_csv('total_favored_winner_utility.csv')[method_subset]
-# df_total_unsatisfied_utility = pd.read_csv('total_unsatisfied_utility.csv')[method_subset]
-# df_fully_satisfied_voters = pd.read_csv('fully_satisfied_voters.csv')[method_subset]
-# df_totally_unsatisfied_voters = pd.read_csv('totally_unsatisfied_voters.csv')[method_subset]
-# df_utility_deviation = pd.read_csv('utility_deviation.csv')[method_subset]
-# df_score_deviation = pd.read_csv('score_deviation.csv')[method_subset]
-# df_favored_winner_deviation = pd.read_csv('favored_winner_deviation.csv')[method_subset]
-# df_number_of_duplicates = pd.read_csv('number_of_duplicates.csv')[method_subset]
-# df_average_winner_polarization = pd.read_csv('average_winner_polarization.csv')[method_subset]
-# df_most_polarized_winner = pd.read_csv('most_polarized_winner.csv')[method_subset]
-# df_least_polarized_winner = pd.read_csv('least_polarized_winner.csv')[method_subset]
-# df_parties = pd.read_csv('parties.csv')
 
 #make plots
 
@@ -299,5 +283,5 @@ figC.savefig("Simulated_Spectrum.png",dpi = 300)
 
 print('done')
 
-# sys.stdout = term
-# f.close()
+sys.stdout = term
+f.close()

@@ -37,7 +37,7 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
             max_score = 0.0
             #Find candidate with the heighest vote sum in a hare quota of ballot weight
             for candidate in S_wrk.columns:
-                cand_df = S_wrk[[candidate]].copy()
+                cand_df = S_orig[[candidate]].copy()
                 cand_df['ballot_weight'] = ballot_weight
                 cand_df = cand_df.sort_values(by=[candidate], ascending=False)
                 c_score = cand_df[cand_df['ballot_weight'].cumsum() <= V/W][candidate].sum()
@@ -75,7 +75,7 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
             
         elif Reweight == 'Allocate':   
             votes_to_allocate = round(V/W)
-            cand_df = S_wrk[[w]].copy()
+            cand_df = S_orig[[w]].copy()
             cand_df['ballot_weight'] = ballot_weight
             cand_df_sort = cand_df.sort_values(by=[w], ascending=False)
             split_point = cand_df_sort[cand_df_sort['ballot_weight'].cumsum() <= V/W][w].iloc[-1]

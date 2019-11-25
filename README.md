@@ -35,7 +35,7 @@ Fully Satisfied Voters
 The number of voters who got candidates with a total score of MAX or more. In the single winner case getting somebody who you scored MAX would leave you satisfied. This translates to the multiwinner case if the one can assume that the mapping of score to Utility obeys Cauchy’s functional equation which essentially means that it is linear. Higher values are better.
 sum([(i>=1) for i in S.sum(axis=1)])
 
-Wasted Voters
+Totally Unsatisfied Voters
 The number of voters who did not score any winners. These are voters who had no influence on the election (other than the Hare Quota) so are wasted. Lower values are better.
 sum([(i==0) for i in S.sum(axis=1)])
 
@@ -89,4 +89,7 @@ This like any other optimal system is likely too computationally expensive
 STAR Selection:
 https://en.wikipedia.org/wiki/STAR_voting
 This is may be better than pure utilitarian
+
+Single Transferable vote:
+This simulation does not really lend itself simply to STV. Score can be turned into rank so that we can use the same input. Also, all the comparison metrics only need the winner set so they will be comparable. The larger issue is that there are many candidates and I allow for clones so effectively infinite. 
 

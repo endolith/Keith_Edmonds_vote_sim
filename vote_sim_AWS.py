@@ -7,7 +7,7 @@ import datetime
 import sys
 from scipy.spatial.distance import cdist
 import matplotlib.image as mpimg
-import utils 
+import utils
 #
 # Types of problems to handle
 # https://www.rangevoting.org/AssetBC.html
@@ -38,26 +38,26 @@ Methods['hare_ballots_jefferson'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 
 
 Methods['utilitarian_allocate'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Allocated Score
 Methods['hare_voters_allocate'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Allocate', 'KP_Transform' : False}
-Methods['hare_ballots_allocate'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Sequential Monroe   
-# 
+Methods['hare_ballots_allocate'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Sequential Monroe
+#
 # Methods['utilitarian_unitary_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Unitary', 'KP_Transform' : True}
 # Methods['hare_voters_unitary_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Unitary', 'KP_Transform' : True}
 # Methods['hare_ballots_unitary_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Unitary', 'KP_Transform' : True}
-# 
+#
 # Methods['utilitarian_jefferson_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
 # Methods['hare_voters_jefferson_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
 # Methods['hare_ballots_jefferson_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
-# 
+#
 # Methods['utilitarian_allocate_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : True}
 # Methods['hare_voters_allocate_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Allocate', 'KP_Transform' : True}
-# Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : True}   
+# Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : True}
 
 
 method_list = sorted(list(Methods.keys()))
 
 df_total_utility = pd.DataFrame(columns=method_list)
 df_total_ln_utility = pd.DataFrame(columns=method_list)
-df_total_favored_winner_utility = pd.DataFrame(columns=method_list) 
+df_total_favored_winner_utility = pd.DataFrame(columns=method_list)
 df_total_unsatisfied_utility = pd.DataFrame(columns=method_list)
 df_fully_satisfied_voters = pd.DataFrame(columns=method_list)
 df_totally_unsatisfied_voters = pd.DataFrame(columns=method_list)
@@ -123,16 +123,16 @@ for iteration in range(25000):
     S = pd.DataFrame(scores, columns=df_can.values[:, 2])
 
     metrics = {}
-    
+
     #Run methods and get metrics
     for method,value in Methods.items():
-        winner_list = utils.get_winners(S_in=S.copy(),Selection = value['Selection'],Reweight = value['Reweight'], KP_Transform = value['KP_Transform'], K=K, W=W) 
-        metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = winner_list, method = method, K=K)  
-    
+        winner_list = utils.get_winners(S_in=S.copy(),Selection = value['Selection'],Reweight = value['Reweight'], KP_Transform = value['KP_Transform'], K=K, W=W)
+        metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = winner_list, method = method, K=K)
+
     #Add metrics to dataframes
     df_total_utility = df_total_utility.append(metrics['total_utility'], ignore_index=True)
     df_total_ln_utility = df_total_ln_utility.append(metrics['total_ln_utility'], ignore_index=True)
-    df_total_favored_winner_utility = df_total_favored_winner_utility.append(metrics['total_favored_winner_utility'], ignore_index=True)    
+    df_total_favored_winner_utility = df_total_favored_winner_utility.append(metrics['total_favored_winner_utility'], ignore_index=True)
     df_total_unsatisfied_utility = df_total_unsatisfied_utility.append(metrics['total_unsatisfied_utility'], ignore_index=True)
     df_fully_satisfied_voters = df_fully_satisfied_voters.append(metrics['fully_satisfied_voters'], ignore_index=True)
     df_totally_unsatisfied_voters = df_totally_unsatisfied_voters.append(metrics['totally_unsatisfied_voters'], ignore_index=True)

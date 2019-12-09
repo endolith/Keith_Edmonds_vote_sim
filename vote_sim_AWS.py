@@ -13,7 +13,7 @@ import utils
 # https://www.rangevoting.org/AssetBC.html
 # https://groups.google.com/forum/#!topic/electionscience/Rk4ZGf-s-s8
 
-#Log the output
+# Log the output
 start_time_hr = datetime.datetime.now()
 log_file = 'votelog_' + str(start_time_hr) + '.txt'
 log_file = log_file.replace(':','-')
@@ -21,7 +21,7 @@ term = sys.stdout
 sys.stdout = f = open(log_file,'w')
 
 # Set the basic parameters
-W = 5.0   # Number of winners
+W = 5     # Number of winners
 K = 5     # The maximum possible score is 5
 V = 10000 # Number of voters
 

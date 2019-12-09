@@ -1,10 +1,28 @@
 import pandas as pd
 import numpy as np
 
-# function to turn scores into a winner set for various systems
-def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transform = False, W=5.0, K=5):
 
-    #create the working set of scores
+def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=False, W=5, K=5):
+    """
+    Turn scores into a winner set for various systems
+
+    Parameters
+    ----------
+    S_in : pandas.DataFrame
+        Table of scores given to each candidate by each voter
+    Selection : {'Utilitarian', 'Hare_Voters', 'Hare_Ballots'}, optional
+        Default is 'Utilitarian'
+    Reweight : {'Unitary', 'Jefferson', 'Allocate'}, optional
+        Default is 'Unitary'
+    W : int, optional
+        Maximum number of winners to return. Default is 5.
+    K : int, optional
+        Maximum possible score. Default is 5.
+    """
+    # To ensure float division in Python 2?
+    W = float(W)
+
+    # Create the working set of scores
     if KP_Transform:
         # The KP transform changes each voter into a set of K approval voters
         groups = []
@@ -12,18 +30,18 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
             groups.append(np.where(S_in.values > threshold, 1, 0))
         S_wrk = pd.DataFrame(np.concatenate(groups), columns=S_in.columns)
     else:
-        #Normalise so scores are in [0,1]
+        # Normalise so scores are in [0, 1]
         S_wrk = pd.DataFrame(S_in.values/K, columns=S_in.columns)
 
     V = S_wrk.shape[0]
 
-    #make copy of working scores
+    # Make copy of working scores
     S_orig = S_wrk.copy()
 
-    #These only matter for specific systems and are initialized here
+    # These only matter for specific systems and are initialized here
     ballot_weight = np.ones(V)
 
-    #Populate winners in a loop
+    # Populate winners in a loop
     winner_list = []
     while len(winner_list) < W:
         #round
@@ -35,7 +53,7 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
             w = pd.DataFrame(np.sort(S_wrk.values, axis=0), columns=S_wrk.columns).tail(round(V/W)).sum().idxmax()
         elif Selection == 'Hare_Ballots':
             max_score = 0.0
-            #Find candidate with the heighest vote sum in a hare quota of ballot weight
+            #Find candidate with the highest vote sum in a hare quota of ballot weight
             for candidate in S_wrk.columns:
                 cand_df = S_orig[[candidate]].copy()
                 cand_df['ballot_weight'] = ballot_weight
@@ -69,7 +87,7 @@ def get_winners(S_in,Selection = 'Utilitarian',Reweight = 'Unitary', KP_Transfor
             S_wrk = pd.DataFrame(mins, columns = S_wrk.columns)
         elif Reweight == 'Jefferson':
             total_sum =  S_orig[winner_list].sum(axis=1)
-            #Ballot weight as defined by the Jeffereson method
+            #Ballot weight as defined by the Jefferson method
             ballot_weight = 1/(total_sum + 1)
             S_wrk = S_orig.mul(ballot_weight, axis = 0)
 

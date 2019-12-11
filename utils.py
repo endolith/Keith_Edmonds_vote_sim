@@ -69,7 +69,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
 
         #Reweight the working scores
         if Reweight == 'Unitary':
-            surplus_factor = max( S_wrk.sum()[w] *W/V , 1.0)
+            surplus_factor = max( S_wrk[w].sum() *W/V , 1.0)
 
             #Score spent on each winner by each voter
             score_spent = S_wrk[w]/ surplus_factor

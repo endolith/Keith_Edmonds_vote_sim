@@ -39,7 +39,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
     S_orig = S_wrk.copy()
 
     # These only matter for specific systems and are initialized here
-    ballot_weight = np.ones(V)
+    ballot_weight = pd.Series(np.ones(V))
 
     # Populate winners in a loop
     winner_list = []

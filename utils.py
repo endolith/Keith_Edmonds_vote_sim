@@ -53,15 +53,25 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
             w = pd.DataFrame(np.sort(S_wrk.values, axis=0), columns=S_wrk.columns).tail(round(V/W)).sum().idxmax()
         elif Selection == 'Hare_Ballots':
             max_score = 0.0
-            #Find candidate with the highest vote sum in a hare quota of ballot weight
-            for candidate in S_wrk.columns:
-                cand_df = S_orig[[candidate]].copy()
-                cand_df['ballot_weight'] = ballot_weight
-                cand_df = cand_df.sort_values(by=[candidate], ascending=False)
-                c_score = cand_df[cand_df['ballot_weight'].cumsum() <= V/W][candidate].sum()
-                if c_score > max_score:
-                    max_score = c_score
-                    w = candidate
+            # Find candidate with the highest vote sum in a hare quota of ballot weight
+
+            # Sort each candidate by scores, from highest to lowest
+            sort_idx = np.argsort(-S_wrk.values, axis=0)
+
+            # Collect ballot weights in same sorted order
+            weights = ballot_weight.values[sort_idx]
+
+            # Accumulate weights for each candidate
+            sums = np.cumsum(weights, axis=0)
+
+            # Accumulated weights under threshold
+            thres = sums <= V/W
+
+            # Sum scores for candidates under threshold
+            c_score = np.sum(thres * np.take_along_axis(S_wrk.values,
+                                                        sort_idx, axis=0),
+                             axis=0)
+            w = S_wrk.columns[np.argmax(c_score)]
         elif Selection == 'Utilitarian':
             w = S_wrk.sum().idxmax()
 

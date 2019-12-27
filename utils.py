@@ -52,11 +52,10 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
         if Selection == 'Hare_Voters':
             w = pd.DataFrame(np.sort(S_wrk.values, axis=0), columns=S_wrk.columns).tail(round(V/W)).sum().idxmax()
         elif Selection == 'Hare_Ballots':
-            max_score = 0.0
-            # Find candidate with the highest vote sum in a hare quota of ballot weight
+            # Find candidate with the highest vote sum in a hare quota of ballot weights
 
             # Sort each candidate by scores, from highest to lowest
-            sort_idx = np.argsort(-S_wrk.values, axis=0)
+            sort_idx = np.argsort(-S_orig.values, axis=0)
 
             # Collect ballot weights in same sorted order
             weights = ballot_weight.values[sort_idx]
@@ -65,12 +64,13 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
             sums = np.cumsum(weights, axis=0)
 
             # Accumulated weights under threshold
-            thres = sums <= V/W
-
+            thres = (sums < V/W)
+            
+            #Weight Scores
+            weighted_scores = S_orig.mul(ballot_weight, axis = 0)
+            
             # Sum scores for candidates under threshold
-            c_score = np.sum(thres * np.take_along_axis(S_wrk.values,
-                                                        sort_idx, axis=0),
-                             axis=0)
+            c_score = np.sum(thres * np.take_along_axis(weighted_scores.values, sort_idx, axis=0),axis=0)
             w = S_wrk.columns[np.argmax(c_score)]
         elif Selection == 'Utilitarian':
             w = S_wrk.sum().idxmax()
@@ -106,18 +106,28 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
             cand_df = S_orig[[w]].copy()
             cand_df['ballot_weight'] = ballot_weight
             cand_df_sort = cand_df.sort_values(by=[w], ascending=False)
-            split_point = cand_df_sort[cand_df_sort['ballot_weight'].cumsum() <= V/W][w].iloc[-1]
+            
+            #find the score where everybody abote is allocated
+            split_point = cand_df_sort[cand_df_sort['ballot_weight'].cumsum() < V/W][w].iloc[-1]
 
+            #if split point <0 then a full quota is not spent
             if split_point>0:
+                #Amount of ballot for voters who voted on the split point
                 voters_on_split = cand_df[cand_df[w] == split_point]['ballot_weight'].sum()
+                
+                #Amount of ballot for voters who voted more than the split point
                 voters_allocated = cand_df[cand_df[w] > split_point]['ballot_weight'].sum()
 
+                #amount to reweight the voters on the split by (ie surpluss handling)
                 reweighted_value = (votes_to_allocate - voters_allocated)/voters_on_split
 
+                #reweight voters on split
                 cand_df.loc[cand_df[w] == split_point, 'ballot_weight'] = cand_df.loc[cand_df[w] == split_point, 'ballot_weight'] * reweighted_value
 
+            #exhause ballots for those above split
             cand_df.loc[cand_df[w] >split_point, 'ballot_weight'] = 0
 
+            #update
             ballot_weight = cand_df['ballot_weight']
             S_wrk = S_orig.mul(ballot_weight, axis = 0)
 

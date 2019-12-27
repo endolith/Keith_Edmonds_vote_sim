@@ -105,6 +105,9 @@ This like any other optimal system is likely too computationally expensive
 https://en.wikipedia.org/wiki/STAR_voting
 This is may be better than pure utilitarian
 
+### Majoritarian Selection:
+This is to use the median() instead of the sum() like in Utilitarian
+
 ### Single Transferable vote
 
 This simulation does not really lend itself simply to STV. Score can be turned into rank so that we can use the same input. Also, all the comparison metrics only need the winner set so they will be comparable. The larger issue is that there are many candidates and I allow for clones so effectively infinite. 

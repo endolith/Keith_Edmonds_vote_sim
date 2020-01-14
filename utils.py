@@ -152,7 +152,13 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
         average_winner_polarization = {}
         most_polarized_winner = {}
         least_polarized_winner = {}
-
+        harmonic_quality = {}
+        unitary_quality = {}
+        ebert_cost = {}
+        most_blocking_loser_capture = {}
+        largest_total_unsatisfied_group = {}
+        total_utility_gain_from_extra_winner = {}
+        
         metrics = {
                     'total_utility' : total_utility,
                     'total_ln_utility' : total_ln_utility,
@@ -167,22 +173,43 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
                     'average_winner_polarization' : average_winner_polarization,
                     'most_polarized_winner' : most_polarized_winner,
                     'least_polarized_winner' : least_polarized_winner,
+                    'harmonic_quality' : harmonic_quality,
+                    'unitary_quality' : unitary_quality,
+                    'ebert_cost' : ebert_cost,
+                    'most_blocking_loser_capture' : most_blocking_loser_capture,
+                    'largest_total_unsatisfied_group' : largest_total_unsatisfied_group,
+                    'total_utility_gain_from_extra_winner' : total_utility_gain_from_extra_winner
+                    
                                         }
 
-    S_metrics = S_in.divide(K)
-    metrics['total_utility'][method] = S_metrics[winner_list].sum(axis=1).sum()
-    metrics['total_ln_utility'][method] = np.log1p(S_metrics[winner_list].sum(axis=1)).sum()
-    metrics['total_favored_winner_utility'][method] = S_metrics[winner_list].max(axis=1).sum()
-    metrics['total_unsatisfied_utility'][method] = sum([1-i for i in S_metrics[winner_list].sum(axis=1) if i < 1])
-    metrics['fully_satisfied_voters'][method] = sum([(i>=1) for i in S_metrics[winner_list].sum(axis=1)])
-    metrics['totally_unsatisfied_voters'][method] = sum([(i==0) for i in S_metrics[winner_list].sum(axis=1)])
-    metrics['utility_deviation'][method] = S_metrics[winner_list].sum(axis=1).std()
-    metrics['score_deviation'][method] = S_metrics[winner_list].values.flatten().std()
-    metrics['favored_winner_deviation'][method] = S_metrics[winner_list].max(axis=1).std()
+    S_norm = S_in.divide(K)
+    S_winners = S_norm[winner_list]
+    V = S_norm.shape[0]
+    W = len(winner_list)
+    quota = W/V
+    #Utility Metrics
+    metrics['total_utility'][method] = S_winners.sum(axis=1).sum()  / V
+    metrics['total_ln_utility'][method] = np.log1p(S_winners.sum(axis=1)).sum()  / V
+    metrics['total_favored_winner_utility'][method] = S_winners.max(axis=1).sum()  / V
+    metrics['total_unsatisfied_utility'][method] = sum([1-i for i in S_winners.sum(axis=1) if i < 1]) / V
+    metrics['fully_satisfied_voters'][method] = sum([(i>=1) for i in S_winners.sum(axis=1)])  / V
+    metrics['totally_unsatisfied_voters'][method] = sum([(i==0) for i in S_winners.sum(axis=1)])  / V
+    #Equity Metrics
+    metrics['utility_deviation'][method] = S_winners.sum(axis=1).std()
+    metrics['score_deviation'][method] = S_winners.values.flatten().std()
+    metrics['favored_winner_deviation'][method] = S_winners.max(axis=1).std()
     metrics['number_of_duplicates'][method] = len(winner_list) -len(set(winner_list))
-    metrics['average_winner_polarization'][method] = S_metrics[winner_list].std(axis=0).mean()
-    metrics['most_polarized_winner'][method] = S_metrics[winner_list].std(axis=0).max()
-    metrics['least_polarized_winner'][method] = S_metrics[winner_list].std(axis=0).min()
+    metrics['average_winner_polarization'][method] = S_winners.std(axis=0).mean()
+    metrics['most_polarized_winner'][method] = S_winners.std(axis=0).max()
+    metrics['least_polarized_winner'][method] = S_winners.std(axis=0).min()
+    #Represenation Metrics
+    metrics['harmonic_quality'][method] = np.divide(S_winners.values , np.argsort(S_winners.values, axis=1) +1).sum()  / V
+    metrics['unitary_quality'][method] = S_winners.divide((S_winners.sum() * W/V).clip(lower=1)).sum(axis = 1).clip(upper=1).sum() / V 
+    metrics['ebert_cost'][method] = (S_winners.divide(S_winners.sum() * W/V).sum(axis = 1)**2).sum() / V 
+    metrics['most_blocking_loser_capture'][method] = S_norm.gt((S_winners.sum(axis = 1)), axis=0).sum().max() / V 
+    metrics['largest_total_unsatisfied_group'][method] = S_norm[S_winners.sum(axis = 1) == 0 ].astype(bool).sum(axis=0).max() / V
+    metrics['total_utility_gain_from_extra_winner'][method] = S_norm[S_winners.sum(axis = 1) == 0 ].sum(axis=0).max() / V
+    
     return   metrics
 
 

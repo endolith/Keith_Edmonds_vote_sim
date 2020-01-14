@@ -9,9 +9,6 @@ from scipy.spatial.distance import cdist
 import matplotlib.image as mpimg
 import utils
 #
-# Types of problems to handle
-# https://www.rangevoting.org/AssetBC.html
-# https://groups.google.com/forum/#!topic/electionscience/Rk4ZGf-s-s8
 
 # Log the output
 start_time_hr = datetime.datetime.now()
@@ -24,6 +21,7 @@ sys.stdout = f = open(log_file,'w')
 W = 5     # Number of winners
 K = 5     # The maximum possible score is 5
 V = 10000 # Number of voters
+elections = 25000 #number of simulations
 
 #Define Data frames to store the results of each iteration
 Methods = {}
@@ -68,12 +66,19 @@ df_number_of_duplicates = pd.DataFrame(columns=method_list)
 df_average_winner_polarization = pd.DataFrame(columns=method_list)
 df_most_polarized_winner = pd.DataFrame(columns=method_list)
 df_least_polarized_winner = pd.DataFrame(columns=method_list)
+df_harmonic_quality = pd.DataFrame(columns=method_list)
+df_unitary_quality = pd.DataFrame(columns=method_list)
+df_ebert_cost = pd.DataFrame(columns=method_list)
+df_most_blocking_loser_capture = pd.DataFrame(columns=method_list)
+df_largest_total_unsatisfied_group = pd.DataFrame(columns=method_list)
+df_total_utility_gain_from_extra_winner = pd.DataFrame(columns=method_list)
+
 
 df_parties = pd.DataFrame(columns = ['x', 'y', 'size', 'party_name'])
 
 #Iterate over each simulation
 start_time = time()
-for iteration in range(25000):
+for iteration in range(elections):
     if (iteration % 10 == 0) or iteration < 10:
         print('iteration: ' + str(iteration))
         print(datetime.datetime.now())
@@ -143,6 +148,13 @@ for iteration in range(25000):
     df_average_winner_polarization = df_average_winner_polarization.append(metrics['average_winner_polarization'], ignore_index=True)
     df_most_polarized_winner = df_most_polarized_winner.append(metrics['most_polarized_winner'], ignore_index=True)
     df_least_polarized_winner = df_least_polarized_winner.append(metrics['least_polarized_winner'], ignore_index=True)
+    df_harmonic_quality = df_harmonic_quality.append(metrics['harmonic_quality'], ignore_index=True)
+    df_unitary_quality = df_unitary_quality.append(metrics['unitary_quality'], ignore_index=True)
+    df_ebert_cost = df_ebert_cost.append(metrics['ebert_cost'], ignore_index=True)
+    df_most_blocking_loser_capture = df_most_blocking_loser_capture.append(metrics['most_blocking_loser_capture'], ignore_index=True)
+    df_largest_total_unsatisfied_group = df_largest_total_unsatisfied_group.append(metrics['largest_total_unsatisfied_group'], ignore_index=True)
+    df_total_utility_gain_from_extra_winner = df_total_utility_gain_from_extra_winner.append(metrics['total_utility_gain_from_extra_winner'], ignore_index=True)
+
 
     #Keep track of simulation points
     df_temp = df_voters.groupby('party_name')['x','y'].mean()
@@ -163,6 +175,12 @@ df_number_of_duplicates.to_csv('number_of_duplicates.csv',index=False)
 df_average_winner_polarization.to_csv('average_winner_polarization.csv',index=False)
 df_most_polarized_winner.to_csv('most_polarized_winner.csv',index=False)
 df_least_polarized_winner.to_csv('least_polarized_winner.csv',index=False)
+df_harmonic_quality.to_csv('harmonic_quality.csv',index=False)
+df_unitary_quality.to_csv('unitary_quality.csv',index=False)
+df_ebert_cost.to_csv('ebert_cost.csv',index=False)
+df_most_blocking_loser_capture.to_csv('most_blocking_loser_capture.csv',index=False)
+df_largest_total_unsatisfied_group.to_csv('largest_total_unsatisfied_group.csv',index=False)
+df_total_utility_gain_from_extra_winner.to_csv('total_utility_gain_from_extra_winner.csv',index=False)
 df_parties.to_csv('parties.csv',index=False)
 
 
@@ -172,42 +190,84 @@ fig = plt.figure(figsize=(15,20))
 fig.suptitle('Utility Metrics')
 
 ax1 = fig.add_subplot(3, 2, 1)
-ax1 = utils.plot_metric(df = df_total_utility, Methods = Methods,axis=ax1,is_int = True)
+ax1 = utils.plot_metric(df = df_total_utility, Methods = Methods,axis=ax1,is_int = False)
 lgd1 = ax1.legend(loc=2)
 ax1.set_xlabel('Total Utility')
 ax1.set_ylabel('Records in bin')
 
 ax2 = fig.add_subplot(3, 2, 2)
-ax2 = utils.plot_metric(df = df_total_ln_utility, Methods = Methods,axis=ax2,is_int = True)
+ax2 = utils.plot_metric(df = df_total_ln_utility, Methods = Methods,axis=ax2,is_int = False)
 lgd2 = ax2.legend(loc=2)
 ax2.set_xlabel('Total Log Utility')
 ax2.set_ylabel('Records in bin')
 
 ax3 = fig.add_subplot(3, 2, 3)
-ax3 = utils.plot_metric(df = df_total_favored_winner_utility, Methods = Methods,axis=ax3,is_int = True)
+ax3 = utils.plot_metric(df = df_total_favored_winner_utility, Methods = Methods,axis=ax3,is_int = False)
 lgd3 = ax3.legend(loc=2)
 ax3.set_xlabel('Total Favored Winner Utility')
 ax3.set_ylabel('Records in bin')
 
 ax4 = fig.add_subplot(3, 2, 4)
-ax4 = utils.plot_metric(df = df_total_unsatisfied_utility, Methods = Methods,axis=ax4,is_int = True)
+ax4 = utils.plot_metric(df = df_total_unsatisfied_utility, Methods = Methods,axis=ax4,is_int = False)
 lgd4 = ax4.legend(loc=2)
 ax4.set_xlabel('Total Unsatisfied Utility')
 ax4.set_ylabel('Records in bin')
 
 ax5 = fig.add_subplot(3, 2, 5)
-ax5 = utils.plot_metric(df = df_fully_satisfied_voters, Methods = Methods,axis=ax5,is_int = True)
+ax5 = utils.plot_metric(df = df_fully_satisfied_voters, Methods = Methods,axis=ax5,is_int = False)
 lgd5 = ax5.legend(loc=2)
 ax5.set_xlabel('Fully Satisfied Voters')
 ax5.set_ylabel('Records in bin')
 
 ax6 = fig.add_subplot(3, 2, 6)
-ax6 = utils.plot_metric(df = df_totally_unsatisfied_voters, Methods = Methods,axis=ax6,is_int = True)
+ax6 = utils.plot_metric(df = df_totally_unsatisfied_voters, Methods = Methods,axis=ax6,is_int = False)
 lgd6 = ax6.legend(loc=2)
 ax6.set_xlabel('Totally Unsatisfied Voters')
 ax6.set_ylabel('Records in bin')
 
 fig.savefig("Utility_Results.png",dpi = 300)
+
+figA = plt.figure(figsize=(15,20))
+figA.suptitle('Represenation Metrics')
+
+axA1 = figA.add_subplot(3, 2, 1)
+axA1 = utils.plot_metric(df = df_harmonic_quality, Methods = Methods,axis=axA1,is_int = False)
+lgd2 = axA1.legend(loc=2)
+axA1.set_xlabel('Harmonic Quality')
+axA1.set_ylabel('Records in bin')
+
+axA2 = figA.add_subplot(3, 2, 2)
+axA2 = utils.plot_metric(df = df_unitary_quality, Methods = Methods,axis=axA2,is_int = False)
+lgd2 = axA2.legend(loc=2)
+axA2.set_xlabel('Unitary Quality')
+axA2.set_ylabel('Records in bin')
+
+axA3 = figA.add_subplot(3, 2, 3)
+axA3 = utils.plot_metric(df = df_ebert_cost, Methods = Methods,axis=axA3,is_int = False)
+lgd3 = axA3.legend(loc=2)
+axA3.set_xlabel('Ebert Cost')
+axA3.set_ylabel('Records in bin')
+
+axA4 = figA.add_subplot(3, 2, 4)
+axA4 = utils.plot_metric(df = df_most_blocking_loser_capture, Methods = Methods,axis=axA4,is_int = False)
+lgd4 = axA4.legend(loc=2)
+axA4.set_xlabel('Most Blocking Loser Capture')
+axA4.set_ylabel('Records in bin')
+
+axA5 = figA.add_subplot(3, 2, 5)
+axA5 = utils.plot_metric(df = df_largest_total_unsatisfied_group, Methods = Methods,axis=axA5,is_int = False)
+lgd5 = axA5.legend(loc=2)
+axA5.set_xlabel('Largest Totally Unsatisfied Group')
+axA5.set_ylabel('Records in bin')
+
+axA6 = figA.add_subplot(3, 2, 6)
+axA6 = utils.plot_metric(df = df_total_utility_gain_from_extra_winner, Methods = Methods,axis=axA6,is_int = False)
+lgd6 = axA6.legend(loc=2)
+axA6.set_xlabel('Total Utility Gain From Extra Winner')
+axA6.set_ylabel('Records in bin')
+
+figA.savefig("Representation_Results.png",dpi = 300)
+
 
 figB = plt.figure(figsize=(15,20))
 figB.suptitle('Equity Metrics')

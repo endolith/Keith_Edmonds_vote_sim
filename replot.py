@@ -32,25 +32,26 @@ Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' 
 
 #path = '../November Results/'
 #path = '../August Results/'
+#path = '../January Results/'
 path = ''
 
 #get dataframes stored as CSVs
 try:
-    df_total_utility = pd.read_csv(path + 'total_utility.csv')
+    df_average_utility = pd.read_csv(path + 'average_utility.csv')
 except FileNotFoundError:
-    print('WARNING: Could not find ' + path + 'total_utility.csv')  
+    print('WARNING: Could not find ' + path + 'average_utility.csv')  
 try:
-    df_total_ln_utility = pd.read_csv(path + 'total_ln_utility.csv')
+    df_average_ln_utility = pd.read_csv(path + 'average_ln_utility.csv')
 except FileNotFoundError:
-    print('WARNING: Could not find ' + path + 'total_ln_utility.csv')  
+    print('WARNING: Could not find ' + path + 'average_ln_utility.csv')  
 try:
-    df_total_favored_winner_utility = pd.read_csv(path + 'total_favored_winner_utility.csv')
+    df_average_favored_winner_utility = pd.read_csv(path + 'average_favored_winner_utility.csv')
 except FileNotFoundError:
-    print('WARNING: Could not find ' + path + 'total_favored_winner_utility.csv')  
+    print('WARNING: Could not find ' + path + 'average_favored_winner_utility.csv')  
 try:
-    df_total_unsatisfied_utility = pd.read_csv(path + 'total_unsatisfied_utility.csv')
+    df_average_unsatisfied_utility = pd.read_csv(path + 'average_unsatisfied_utility.csv')
 except FileNotFoundError:
-    print('WARNING: Could not find ' + path + 'total_unsatisfied_utility.csv')  
+    print('WARNING: Could not find ' + path + 'average_unsatisfied_utility.csv')  
 try:
     df_fully_satisfied_voters = pd.read_csv(path + 'fully_satisfied_voters.csv')
 except FileNotFoundError:
@@ -59,6 +60,30 @@ try:
     df_totally_unsatisfied_voters = pd.read_csv(path + 'totally_unsatisfied_voters.csv')
 except FileNotFoundError:
     print('WARNING: Could not find ' + path + 'totally_unsatisfied_voters.csv')  
+try:
+    df_harmonic_quality = pd.read_csv(path + 'harmonic_quality.csv')
+except FileNotFoundError:
+    print('WARNING: Could not find ' + path + 'harmonic_quality.csv')  
+try:
+    df_unitary_quality = pd.read_csv(path + 'unitary_quality.csv')
+except FileNotFoundError:
+    print('WARNING: Could not find ' + path + 'unitary_quality.csv')  
+try:
+    df_ebert_cost = pd.read_csv(path + 'ebert_cost.csv')
+except FileNotFoundError:
+    print('WARNING: Could not find ' + path + 'ebert_cost.csv')  
+try:
+    df_most_blocking_loser_capture = pd.read_csv(path + 'most_blocking_loser_capture.csv')
+except FileNotFoundError:
+    print('WARNING: Could not find ' + path + 'most_blocking_loser_capture.csv')  
+try:
+    df_largest_total_unsatisfied_group = pd.read_csv(path + 'largest_total_unsatisfied_group.csv')
+except FileNotFoundError:
+    print('WARNING: Could not find ' + path + 'largest_total_unsatisfied_group.csv')  
+try:
+    df_average_utility_gain_from_extra_winner = pd.read_csv(path + 'average_utility_gain_from_extra_winner.csv')   
+except FileNotFoundError:
+    print('WARNING: Could not find ' + path + 'average_utility_gain_from_extra_winner.csv')  
 try:
     df_utility_deviation = pd.read_csv(path + 'utility_deviation.csv')
 except FileNotFoundError:
@@ -94,7 +119,7 @@ except FileNotFoundError:
     
 #choose subset
 method_all = list(Methods.keys())
-method_subset = sorted([i for i in df_total_utility.columns if i in method_all])
+method_subset = sorted([i for i in df_average_utility.columns if i in method_all])
 #method_subset = ['hare_ballots_allocate', 'utilitarian_allocate','utilitarian_jefferson', 'utilitarian_unitary']
 
 #make plots
@@ -103,43 +128,43 @@ fig.suptitle('Utility Metrics')
 
 try:
     ax1 = fig.add_subplot(3, 2, 1)
-    ax1 = utils.plot_metric(df = df_total_utility[method_subset], Methods = Methods,axis=ax1,is_int = True)
+    ax1 = utils.plot_metric(df = df_average_utility[method_subset], Methods = Methods,axis=ax1,is_int = False)
     lgd1 = ax1.legend(loc=2)
-    ax1.set_xlabel('Total Utility')
+    ax1.set_xlabel('Average Utility')
     ax1.set_ylabel('Records in bin')
 except:
     pass
     
 try:    
     ax2 = fig.add_subplot(3, 2, 2)
-    ax2 = utils.plot_metric(df = df_total_ln_utility[method_subset], Methods = Methods,axis=ax2,is_int = True)
+    ax2 = utils.plot_metric(df = df_average_ln_utility[method_subset], Methods = Methods,axis=ax2,is_int = False)
     lgd2 = ax2.legend(loc=2)
-    ax2.set_xlabel('Total Log Utility')
+    ax2.set_xlabel('Average Log Utility')
     ax2.set_ylabel('Records in bin')
 except:
     pass
     
 try:      
     ax3 = fig.add_subplot(3, 2, 3)
-    ax3 = utils.plot_metric(df = df_total_favored_winner_utility[method_subset], Methods = Methods,axis=ax3,is_int = True)
+    ax3 = utils.plot_metric(df = df_average_favored_winner_utility[method_subset], Methods = Methods,axis=ax3,is_int = False)
     lgd3 = ax3.legend(loc=2)
-    ax3.set_xlabel('Total Favored Winner Utility')
+    ax3.set_xlabel('Average Favored Winner Utility')
     ax3.set_ylabel('Records in bin')
 except:
     pass
     
 try:      
     ax4 = fig.add_subplot(3, 2, 4)
-    ax4 = utils.plot_metric(df = df_total_unsatisfied_utility[method_subset], Methods = Methods,axis=ax4,is_int = True)
+    ax4 = utils.plot_metric(df = df_average_unsatisfied_utility[method_subset], Methods = Methods,axis=ax4,is_int = False)
     lgd4 = ax4.legend(loc=2)
-    ax4.set_xlabel('Total Unsatisfied Utility')
+    ax4.set_xlabel('Average Unsatisfied Utility')
     ax4.set_ylabel('Records in bin')
 except:
     pass
     
 try:      
     ax5 = fig.add_subplot(3, 2, 5)
-    ax5 = utils.plot_metric(df = df_fully_satisfied_voters[method_subset], Methods = Methods,axis=ax5,is_int = True)
+    ax5 = utils.plot_metric(df = df_fully_satisfied_voters[method_subset], Methods = Methods,axis=ax5,is_int = False)
     lgd5 = ax5.legend(loc=2)
     ax5.set_xlabel('Fully Satisfied Voters')
     ax5.set_ylabel('Records in bin')
@@ -148,7 +173,7 @@ except:
     
 try:      
     ax6 = fig.add_subplot(3, 2, 6)
-    ax6 = utils.plot_metric(df = df_totally_unsatisfied_voters[method_subset], Methods = Methods,axis=ax6,is_int = True)
+    ax6 = utils.plot_metric(df = df_totally_unsatisfied_voters[method_subset], Methods = Methods,axis=ax6,is_int = False)
     lgd6 = ax6.legend(loc=2)
     ax6.set_xlabel('Totally Unsatisfied Voters')
     ax6.set_ylabel('Records in bin')
@@ -156,6 +181,67 @@ except:
     pass
     
 fig.savefig(path + "Utility_Results.png",dpi = 300)
+
+
+figA = plt.figure(figsize=(15,20))
+figA.suptitle('Represenation Metrics')
+
+try:  
+    axA1 = figA.add_subplot(3, 2, 1)
+    axA1 = utils.plot_metric(df = df_harmonic_quality, Methods = Methods,axis=axA1,is_int = False)
+    lgd2 = axA1.legend(loc=2)
+    axA1.set_xlabel('Harmonic Quality')
+    axA1.set_ylabel('Records in bin')
+except:
+    pass
+    
+try:     
+    axA2 = figA.add_subplot(3, 2, 2)
+    axA2 = utils.plot_metric(df = df_unitary_quality, Methods = Methods,axis=axA2,is_int = False)
+    lgd2 = axA2.legend(loc=2)
+    axA2.set_xlabel('Unitary Quality')
+    axA2.set_ylabel('Records in bin')
+except:
+    pass
+    
+try:     
+    axA3 = figA.add_subplot(3, 2, 3)
+    axA3 = utils.plot_metric(df = df_ebert_cost, Methods = Methods,axis=axA3,is_int = False)
+    lgd3 = axA3.legend(loc=2)
+    axA3.set_xlabel('Ebert Cost')
+    axA3.set_ylabel('Records in bin')
+except:
+    pass
+    
+try:     
+    axA4 = figA.add_subplot(3, 2, 4)
+    axA4 = utils.plot_metric(df = df_most_blocking_loser_capture, Methods = Methods,axis=axA4,is_int = False)
+    lgd4 = axA4.legend(loc=2)
+    axA4.set_xlabel('Most Blocking Loser Capture')
+    axA4.set_ylabel('Records in bin')
+except:
+    pass
+    
+try:     
+    axA5 = figA.add_subplot(3, 2, 5)
+    axA5 = utils.plot_metric(df = df_largest_total_unsatisfied_group, Methods = Methods,axis=axA5,is_int = False)
+    lgd5 = axA5.legend(loc=2)
+    axA5.set_xlabel('Largest Totally Unsatisfied Group')
+    axA5.set_ylabel('Records in bin')
+except:
+    pass
+    
+try:     
+    axA6 = figA.add_subplot(3, 2, 6)
+    axA6 = utils.plot_metric(df = df_average_utility_gain_from_extra_winner, Methods = Methods,axis=axA6,is_int = False)
+    lgd6 = axA6.legend(loc=2)
+    axA6.set_xlabel('Average Utility Gain From Extra Winner')
+    axA6.set_ylabel('Records in bin')
+except:
+    pass
+    
+figA.savefig(path + "Representation_Results.png",dpi = 300)
+
 
 figB = plt.figure(figsize=(15,20))
 figB.suptitle('Equity Metrics')

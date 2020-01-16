@@ -139,12 +139,18 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
 
     #store metrics for each method
     if not metrics:
-        total_utility = {}
-        total_ln_utility = {}
-        total_favored_winner_utility = {}
-        total_unsatisfied_utility = {}
+        average_utility = {}
+        average_ln_utility = {}
+        average_favored_winner_utility = {}
+        average_unsatisfied_utility = {}
         fully_satisfied_voters = {}
         totally_unsatisfied_voters = {}
+        harmonic_quality = {}
+        unitary_quality = {}
+        ebert_cost = {}
+        most_blocking_loser_capture = {}
+        largest_total_unsatisfied_group = {}
+        average_utility_gain_from_extra_winner = {}
         utility_deviation = {}
         score_deviation = {}
         favored_winner_deviation = {}
@@ -152,33 +158,28 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
         average_winner_polarization = {}
         most_polarized_winner = {}
         least_polarized_winner = {}
-        harmonic_quality = {}
-        unitary_quality = {}
-        ebert_cost = {}
-        most_blocking_loser_capture = {}
-        largest_total_unsatisfied_group = {}
-        total_utility_gain_from_extra_winner = {}
+
         
         metrics = {
-                    'total_utility' : total_utility,
-                    'total_ln_utility' : total_ln_utility,
-                    'total_favored_winner_utility' : total_favored_winner_utility,
-                    'total_unsatisfied_utility' : total_unsatisfied_utility,
+                    'average_utility' : average_utility,
+                    'average_ln_utility' : average_ln_utility,
+                    'average_favored_winner_utility' : average_favored_winner_utility,
+                    'average_unsatisfied_utility' : average_unsatisfied_utility,
                     'fully_satisfied_voters' : fully_satisfied_voters,
                     'totally_unsatisfied_voters' : totally_unsatisfied_voters,
+                    'harmonic_quality' : harmonic_quality,
+                    'unitary_quality' : unitary_quality,
+                    'ebert_cost' : ebert_cost,
+                    'most_blocking_loser_capture' : most_blocking_loser_capture,
+                    'largest_total_unsatisfied_group' : largest_total_unsatisfied_group,
+                    'average_utility_gain_from_extra_winner' : average_utility_gain_from_extra_winner,
                     'utility_deviation' : utility_deviation,
                     'score_deviation' : score_deviation,
                     'favored_winner_deviation' : favored_winner_deviation,
                     'number_of_duplicates' : number_of_duplicates,
                     'average_winner_polarization' : average_winner_polarization,
                     'most_polarized_winner' : most_polarized_winner,
-                    'least_polarized_winner' : least_polarized_winner,
-                    'harmonic_quality' : harmonic_quality,
-                    'unitary_quality' : unitary_quality,
-                    'ebert_cost' : ebert_cost,
-                    'most_blocking_loser_capture' : most_blocking_loser_capture,
-                    'largest_total_unsatisfied_group' : largest_total_unsatisfied_group,
-                    'total_utility_gain_from_extra_winner' : total_utility_gain_from_extra_winner
+                    'least_polarized_winner' : least_polarized_winner
                     
                                         }
 
@@ -186,14 +187,23 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
     S_winners = S_norm[winner_list]
     V = S_norm.shape[0]
     W = len(winner_list)
-    quota = W/V
+    #quota = W/V
     #Utility Metrics
-    metrics['total_utility'][method] = S_winners.sum(axis=1).sum()  / V
-    metrics['total_ln_utility'][method] = np.log1p(S_winners.sum(axis=1)).sum()  / V
-    metrics['total_favored_winner_utility'][method] = S_winners.max(axis=1).sum()  / V
-    metrics['total_unsatisfied_utility'][method] = sum([1-i for i in S_winners.sum(axis=1) if i < 1]) / V
+    metrics['average_utility'][method] = S_winners.sum(axis=1).sum()  / V
+    metrics['average_ln_utility'][method] = np.log1p(S_winners.sum(axis=1)).sum()  / V
+    metrics['average_favored_winner_utility'][method] = S_winners.max(axis=1).sum()  / V
+    metrics['average_unsatisfied_utility'][method] = sum([1-i for i in S_winners.sum(axis=1) if i < 1]) / V
     metrics['fully_satisfied_voters'][method] = sum([(i>=1) for i in S_winners.sum(axis=1)])  / V
     metrics['totally_unsatisfied_voters'][method] = sum([(i==0) for i in S_winners.sum(axis=1)])  / V
+
+    #Represenation Metrics
+    metrics['harmonic_quality'][method] = np.divide(S_winners.values , np.argsort(S_winners.values, axis=1) +1).sum()  / V
+    metrics['unitary_quality'][method] = S_winners.divide((S_winners.sum() * W/V).clip(lower=1)).sum(axis = 1).clip(upper=1).sum() / V 
+    metrics['ebert_cost'][method] = (S_winners.divide(S_winners.sum() * W/V).sum(axis = 1)**2).sum() / V 
+    metrics['most_blocking_loser_capture'][method] = S_norm.gt((S_winners.sum(axis = 1)), axis=0).sum().max() / V 
+    metrics['largest_total_unsatisfied_group'][method] = S_norm[S_winners.sum(axis = 1) == 0 ].astype(bool).sum(axis=0).max() / V
+    metrics['average_utility_gain_from_extra_winner'][method] = S_norm.sub(S_winners.sum(axis = 1),axis = 0).clip(lower=0).sum(axis = 0).max() / V 
+
     #Equity Metrics
     metrics['utility_deviation'][method] = S_winners.sum(axis=1).std()
     metrics['score_deviation'][method] = S_winners.values.flatten().std()
@@ -202,13 +212,6 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
     metrics['average_winner_polarization'][method] = S_winners.std(axis=0).mean()
     metrics['most_polarized_winner'][method] = S_winners.std(axis=0).max()
     metrics['least_polarized_winner'][method] = S_winners.std(axis=0).min()
-    #Represenation Metrics
-    metrics['harmonic_quality'][method] = np.divide(S_winners.values , np.argsort(S_winners.values, axis=1) +1).sum()  / V
-    metrics['unitary_quality'][method] = S_winners.divide((S_winners.sum() * W/V).clip(lower=1)).sum(axis = 1).clip(upper=1).sum() / V 
-    metrics['ebert_cost'][method] = (S_winners.divide(S_winners.sum() * W/V).sum(axis = 1)**2).sum() / V 
-    metrics['most_blocking_loser_capture'][method] = S_norm.gt((S_winners.sum(axis = 1)), axis=0).sum().max() / V 
-    metrics['largest_total_unsatisfied_group'][method] = S_norm[S_winners.sum(axis = 1) == 0 ].astype(bool).sum(axis=0).max() / V
-    metrics['total_utility_gain_from_extra_winner'][method] = S_norm[S_winners.sum(axis = 1) == 0 ].sum(axis=0).max() / V
     
     return   metrics
 
@@ -218,11 +221,12 @@ def plot_metric(df, Methods,axis,is_int = True):
     #colors = ['b','r','k','#FFFF00','g','#808080','#56B4E9','#FF7F00']
     colors = {'Jefferson' : 'b','Allocate' : 'r','Unitary' : 'k','Jefferson_KP' : 'g','Allocate_KP' : '#FF7F00','Unitary_KP' : '#FFFF00'}
     styles = {'Utilitarian' : 'solid', 'Hare_Voters' : 'dashed', 'Hare_Ballots' : 'dotted'}
+    bins = np.linspace(df.min().min(),df.max().max())
     for i, col in enumerate(df.columns):
         reweight = Methods[col]['Reweight']
         if Methods[col]['KP_Transform']: reweight = reweight + '_KP'
         selection = Methods[col]['Selection']
-        count, bins, ignored = axis.hist(list(df[col]), 50, color=colors[reweight],linestyle = styles[selection] ,histtype = 'step', label=col)
+        count, bins, ignored = axis.hist(list(df[col]), bins = bins, color=colors[reweight],linestyle = styles[selection] ,histtype = 'step', label=col)
         if is_int:
             textstr = '$\mu=%.0f$\n$\sigma=%.0f$'%(df[col].mean(), df[col].std())
         else:

@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.image as mpimg
 from matplotlib.text import TextPath
 from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
+#from matplotlib import cm
 import utils 
 # Types of problems to handle
 # https://www.rangevoting.org/AssetBC.html

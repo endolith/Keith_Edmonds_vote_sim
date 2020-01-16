@@ -125,7 +125,7 @@ https://electowiki.org/wiki/Justified_representation
 
 S_norm[S_winners.sum(axis = 1) == 0 ].astype(bool).sum(axis=0).max() / V
 
-###Average Utility Gain From Extra Winner
+### Average Utility Gain From Extra Winner
 
 It may not be totally obvious but this is the same quantity as the prior if the score ballots are passed through the KP-Transform. Recall that Justified representation is not defined for score but approval. It also somewhat unfies the Most Blocking Loser Capture Fraction and Average Utility Gain From Extra Winner. Lower Values are better. A value higher than 1/W implies a problem.
 

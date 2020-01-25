@@ -12,7 +12,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
         Table of scores given to each candidate by each voter
     Selection : {'Utilitarian', 'Hare_Voters', 'Hare_Ballots'}, optional
         Default is 'Utilitarian'
-    Reweight : {'Unitary', 'Jefferson', 'Allocate'}, optional
+    Reweight : {'Unitary', 'Jefferson', 'Webster', 'Allocate'}, optional
         Default is 'Unitary'
     W : int, optional
         Maximum number of winners to return. Default is 5.
@@ -95,12 +95,19 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
             #Take score off of ballot (ie reweight)
             mins = np.minimum(S_wrk.values,ballot_weight.values[:, np.newaxis])
             S_wrk = pd.DataFrame(mins, columns = S_wrk.columns)
+            
         elif Reweight == 'Jefferson':
             total_sum =  S_orig[winner_list].sum(axis=1)
             #Ballot weight as defined by the Jefferson method
             ballot_weight = 1/(total_sum + 1)
             S_wrk = S_orig.mul(ballot_weight, axis = 0)
-
+        
+        elif Reweight == 'Webster':
+            total_sum =  S_orig[winner_list].sum(axis=1)
+            #Ballot weight as defined by the Webster method
+            ballot_weight = 1/(2*total_sum + 1)
+            S_wrk = S_orig.mul(ballot_weight, axis = 0)
+            
         elif Reweight == 'Allocate':
             votes_to_allocate = round(V/W)
             cand_df = S_orig[[w]].copy()
@@ -219,7 +226,8 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
 def plot_metric(df, Methods,axis,is_int = True):
     #plots metrics
     #colors = ['b','r','k','#FFFF00','g','#808080','#56B4E9','#FF7F00']
-    colors = {'Jefferson' : 'b','Allocate' : 'r','Unitary' : 'k','Jefferson_KP' : 'g','Allocate_KP' : '#FF7F00','Unitary_KP' : '#FFFF00'}
+    colors = {'Jefferson' : '#FF7F00','Webster' : 'b', 'Allocate' : 'r','Unitary' : 'k',
+              'Jefferson_KP' : '#FFFF00','Webster_KP' : 'c','Allocate_KP' : 'g','Unitary_KP' : '#808080'}
     styles = {'Utilitarian' : 'solid', 'Hare_Voters' : 'dashed', 'Hare_Ballots' : 'dotted'}
     bins = np.linspace(df.min().min(),df.max().max())
     for i, col in enumerate(df.columns):

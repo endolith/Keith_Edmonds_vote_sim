@@ -30,14 +30,18 @@ Methods['utilitarian_unitary'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Uni
 #Methods['hare_voters_unitary'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Unitary', 'KP_Transform' : False}
 Methods['hare_ballots_unitary'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Unitary', 'KP_Transform' : False}
 
-Methods['utilitarian_jefferson'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : False} #Reweighted Range Voting
+#Methods['utilitarian_jefferson'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : False} #Reweighted Range Voting
 #Methods['hare_voters_jefferson'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
-Methods['hare_ballots_jefferson'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
+#Methods['hare_ballots_jefferson'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
 
-Methods['utilitarian_allocate'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Allocated Score
+Methods['utilitarian_Webster'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Webster', 'KP_Transform' : False} #Reweighted Range Voting
+#Methods['hare_voters_Webster'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Webster', 'KP_Transform' : False}
+Methods['hare_ballots_Webster'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Webster', 'KP_Transform' : False}
+
+#Methods['utilitarian_allocate'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Allocated Score
 #Methods['hare_voters_allocate'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Allocate', 'KP_Transform' : False}
-Methods['hare_ballots_allocate'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Sequential Monroe
-#
+#Methods['hare_ballots_allocate'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Sequential Monroe
+
 # Methods['utilitarian_unitary_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Unitary', 'KP_Transform' : True}
 # Methods['hare_voters_unitary_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Unitary', 'KP_Transform' : True}
 # Methods['hare_ballots_unitary_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Unitary', 'KP_Transform' : True}
@@ -46,9 +50,13 @@ Methods['hare_ballots_allocate'] = {'Selection' : 'Hare_Ballots', 'Reweight' : '
 # Methods['hare_voters_jefferson_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
 # Methods['hare_ballots_jefferson_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
 #
-# Methods['utilitarian_allocate_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : True}
+# Methods['utilitarian_Webster_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Webster', 'KP_Transform' : True}
+# Methods['hare_voters_Webster_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Webster', 'KP_Transform' : True}
+# Methods['hare_ballots_Webster_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Webster', 'KP_Transform' : True}
+#
+Methods['utilitarian_allocate_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : True}
 # Methods['hare_voters_allocate_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Allocate', 'KP_Transform' : True}
-# Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : True}
+Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : True}
 
 
 method_list = sorted(list(Methods.keys()))

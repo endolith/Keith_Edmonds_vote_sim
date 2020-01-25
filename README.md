@@ -1,17 +1,17 @@
 
-This code will simulate scoring and apply electoral systems to evaluate winners winner sets produced by each method. The sequential systems are modular in the sense that each is composed of a selection and a reweigting method.
+This code will simulate scoring on candidates and apply electoral systems to evaluate winners winner sets produced by each method. The sequential systems are modular in the sense that each is composed of a selection and a reweigting method.
 
 There are three selection methods: 'Utilitarian','Hare_Voters' and 'Hare_Ballots' . 
 These choose winners from all candidates based on the voters scores.
 
-There are three Reweight methods: 'Unitary', 'Jefferson' and 'Allocate'.
+There are four Reweight methods: 'Jefferson', 'Webster', 'Unitary' and 'Allocate'.
 These alter the scores between rounds based on the winner to ensure an outcome which passes the standard criteria for Proportional Representation
 
-All combinations are possible which means that there are 9 possible models.
+All combinations are possible which means that there are 12 basic systems.
 
-There is also the option of applying the KP transform to any system which means there are 18 possible systems. 
+There is also the option of applying the KP transform to any system which means there are 24 possible systems. 
 
-Since we know from the Gibbard-Satterthwaite theorem as well as the Balinski & Young's Impossibility Theorem there is no chance to make an perfect method. The task is then to mitigate the consequences of of the flaws to get the best ressults in the end. To judge "best", many evaluation metrics are plotted for each system to compared under. 
+Since we know from the Gibbard-Satterthwaite theorem as well as the Balinski & Young's Impossibility Theorem there is no chance to make a perfect method. The task is then to mitigate the consequences of the flaws to get the best results in the end. To judge "best", many evaluation metrics are plotted for each system to compared under. 
 
 # Simulation Methodology 
 
@@ -30,10 +30,11 @@ In any case this gives three coded selections methods:
 There are also three coded Reweight methods:
 
     1. Jeffereson: Reweight by 1/(1+SUM/MAX)
-    2. Unitary: Subtract SUM/MAX until exhausted
-    3. Allocation: Exhaust whole ballots by allocating them to winners 
+	2. Webster: Reweight by 1/(1+2*SUM/MAX)
+    3. Unitary: Subtract SUM/MAX until exhausted
+    4. Allocation: Exhaust whole ballots by allocating them to winners 
 
-		*Note that both 2 and 3 require surplus handing and fractional surplus handling was done for both.
+		*Note that both 3 and 4 require surplus handing and fractional surplus handling was done for both but in slightly differeing ways accordingto their theory.
 
 Standard systems can be produced in this manner. For example Rewieghted Range voting is Utilitarian selection with Jefferson Reweighting. Calling the funtion get_winners() will return a list of winners.
 

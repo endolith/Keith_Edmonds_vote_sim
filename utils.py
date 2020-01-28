@@ -10,7 +10,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
     ----------
     S_in : pandas.DataFrame
         Table of scores given to each candidate by each voter
-    Selection : {'Utilitarian', 'Hare_Voters', 'Hare_Ballots'}, optional
+    Selection : {'Utilitarian', 'STAR', 'Hare_Ballots'}, optional
         Default is 'Utilitarian'
     Reweight : {'Unitary', 'Jefferson', 'Webster', 'Allocate'}, optional
         Default is 'Unitary'
@@ -49,8 +49,11 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
 
         #select winner
         #w = index with highest selection metric
-        if Selection == 'Hare_Voters':
-            w = pd.DataFrame(np.sort(S_wrk.values, axis=0), columns=S_wrk.columns).tail(round(V/W)).sum().idxmax()
+        if Selection == 'STAR':
+            #find top two
+            df_tops = S_wrk[S_wrk.sum().nlargest(2, keep='all').index]
+            #Run off winner
+            w = df_tops.eq(df_tops.max(1), axis=0).sum().idxmax()    
         elif Selection == 'Hare_Ballots':
             # Find candidate with the highest vote sum in a hare quota of ballot weights
 
@@ -71,7 +74,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
             
             # Sum scores for candidates under threshold
             c_score = np.sum(thres * np.take_along_axis(weighted_scores.values, sort_idx, axis=0),axis=0)
-            w = S_wrk.columns[np.argmax(c_score)]
+            w = S_orig.columns[np.argmax(c_score)]
         elif Selection == 'Utilitarian':
             w = S_wrk.sum().idxmax()
 
@@ -228,7 +231,7 @@ def plot_metric(df, Methods,axis,is_int = True):
     #colors = ['b','r','k','#FFFF00','g','#808080','#56B4E9','#FF7F00']
     colors = {'Jefferson' : '#FF7F00','Webster' : 'b', 'Allocate' : 'r','Unitary' : 'k',
               'Jefferson_KP' : '#FFFF00','Webster_KP' : 'c','Allocate_KP' : 'g','Unitary_KP' : '#808080'}
-    styles = {'Utilitarian' : 'solid', 'Hare_Voters' : 'dashed', 'Hare_Ballots' : 'dotted'}
+    styles = {'Utilitarian' : 'solid', 'STAR' : 'dashed', 'Hare_Ballots' : 'dotted'}
     bins = np.linspace(df.min().min(),df.max().max())
     for i, col in enumerate(df.columns):
         reweight = Methods[col]['Reweight']

@@ -1,7 +1,7 @@
 
 This code will simulate scoring on candidates and apply electoral systems to evaluate winners winner sets produced by each method. The sequential systems are modular in the sense that each is composed of a selection and a reweigting method.
 
-There are three selection methods: 'Utilitarian','Hare_Voters' and 'Hare_Ballots' . 
+There are three selection methods: 'Utilitarian','STAR' and 'Hare_Ballots' . 
 These choose winners from all candidates based on the voters scores.
 
 There are four Reweight methods: 'Jefferson', 'Webster', 'Unitary' and 'Allocate'.
@@ -24,7 +24,7 @@ All simulated systems are sequential score systems. They are all of the class wh
 In any case this gives three coded selections methods:
 
     1. Utilitarian: Sum of score
-    2. Hare Voters: Sum of score in Hare quota of voters
+    2. STAR: Top two Utilitarian then a pairwise runoff
     3. Hare Ballots: Sum of score in Hare quota of ballots
 
 There are also three coded Reweight methods:
@@ -217,14 +217,6 @@ https://www.rangevoting.org/QualityMulti.html
 
 This like any other optimal system is likely too computationally expensive
 
-### STAR Selection
-
-https://en.wikipedia.org/wiki/STAR_voting
-
-This is may be better than pure utilitarian
-
-### Majoritarian Selection:
-This is to use the median() instead of the sum() like in Utilitarian
 
 ### Single Transferable vote
 

@@ -210,9 +210,9 @@ utilitarian_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utili
 winners['utilitarian_unitary_winners'] = utilitarian_unitary_winners
 metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_unitary_winners, method = 'utilitarian_unitary', K=K)
 
-hare_voters_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Voters',Reweight = 'Unitary', K=K, W=W)
-winners['hare_voters_unitary_winners'] = hare_voters_unitary_winners
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_voters_unitary_winners, method = 'hare_voters_unitary', K=K)
+STAR_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'STAR',Reweight = 'Unitary', K=K, W=W)
+winners['STAR_unitary_winners'] = STAR_unitary_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = STAR_unitary_winners, method = 'STAR_unitary', K=K)
 
 hare_ballots_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Unitary', K=K, W=W)
 winners['hare_ballots_unitary_winners'] = hare_ballots_unitary_winners
@@ -222,9 +222,9 @@ utilitarian_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Uti
 winners['utilitarian_jefferson_winners'] = utilitarian_jefferson_winners
 metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_jefferson_winners, method = 'utilitarian_jefferson', K=K)
 
-hare_voters_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Voters',Reweight = 'Jefferson', K=K, W=W) 
-winners['hare_voters_jefferson_winners'] = hare_voters_jefferson_winners
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_voters_jefferson_winners, method = 'hare_voters_jefferson', K=K)
+STAR_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'STAR',Reweight = 'Jefferson', K=K, W=W) 
+winners['STAR_jefferson_winners'] = STAR_jefferson_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = STAR_jefferson_winners, method = 'STAR_jefferson', K=K)
 
 hare_ballots_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Jefferson', K=K, W=W) 
 winners['hare_ballots_jefferson_winners'] = hare_ballots_jefferson_winners
@@ -234,9 +234,9 @@ utilitarian_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'Util
 winners['utilitarian_allocate_winners'] = utilitarian_allocate_winners
 metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_allocate_winners, method = 'utilitarian_allocate', K=K)
 
-hare_voters_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Voters',Reweight = 'Allocate', K=K, W=W) 
-winners['hare_voters_allocate_winners'] = hare_voters_allocate_winners
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_voters_allocate_winners, method = 'hare_voters_allocate', K=K)
+STAR_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'STAR',Reweight = 'Allocate', K=K, W=W) 
+winners['STAR_allocate_winners'] = STAR_allocate_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = STAR_allocate_winners, method = 'STAR_allocate', K=K)
 
 hare_ballots_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Allocate', K=K, W=W) 
 winners['hare_ballots_allocate_winners'] = hare_ballots_allocate_winners

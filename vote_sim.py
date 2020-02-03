@@ -16,10 +16,10 @@ centerists = False
 maximize = True
 
 #Number of winners
-W = 5.0
+W = 5
 
 #the maximum possible score is 5
-K = 5.0
+K = 5
 
 voter_groups = []
 
@@ -241,6 +241,11 @@ metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = STAR_
 hare_ballots_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Allocate', K=K, W=W) 
 winners['hare_ballots_allocate_winners'] = hare_ballots_allocate_winners
 metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_ballots_allocate_winners, method = 'hare_ballots_allocate', K=K)
+
+hare_ballots_allocate_winners_kp = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Allocate', KP_Transform=True , K=K, W=W) 
+winners['hare_ballots_allocate_winners_kp'] = hare_ballots_allocate_winners_kp
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_ballots_allocate_winners_kp, method = 'hare_ballots_allocate_kp', K=K)
+
 
 print(pd.DataFrame.from_dict(winners).T)
 

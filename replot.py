@@ -6,31 +6,39 @@ import utils
 Methods = {}
 
 Methods['utilitarian_unitary'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Unitary', 'KP_Transform' : False} #Sequentially Spent Score
-Methods['hare_voters_unitary'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Unitary', 'KP_Transform' : False}
+Methods['STAR_unitary'] = {'Selection' : 'STAR', 'Reweight' : 'Unitary', 'KP_Transform' : False}
 Methods['hare_ballots_unitary'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Unitary', 'KP_Transform' : False}
 
 Methods['utilitarian_jefferson'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : False} #Reweighted Range Voting
-Methods['hare_voters_jefferson'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
+Methods['STAR_jefferson'] = {'Selection' : 'STAR', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
 Methods['hare_ballots_jefferson'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
 
+Methods['utilitarian_Webster'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Webster', 'KP_Transform' : False} #Reweighted Range Voting
+Methods['STAR_Webster'] = {'Selection' : 'STAR', 'Reweight' : 'Webster', 'KP_Transform' : False}
+Methods['hare_ballots_Webster'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Webster', 'KP_Transform' : False}
+
 Methods['utilitarian_allocate'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Allocated Score
-Methods['hare_voters_allocate'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Allocate', 'KP_Transform' : False}
+Methods['STAR_allocate'] = {'Selection' : 'STAR', 'Reweight' : 'Allocate', 'KP_Transform' : False}
 Methods['hare_ballots_allocate'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Sequential Monroe   
 # 
 Methods['utilitarian_unitary_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Unitary', 'KP_Transform' : True}
-Methods['hare_voters_unitary_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Unitary', 'KP_Transform' : True}
+Methods['STAR_unitary_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Unitary', 'KP_Transform' : True}
 Methods['hare_ballots_unitary_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Unitary', 'KP_Transform' : True}
 
 Methods['utilitarian_jefferson_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
-Methods['hare_voters_jefferson_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
+Methods['STAR_jefferson_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
 Methods['hare_ballots_jefferson_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
 
+Methods['utilitarian_Webster_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Webster', 'KP_Transform' : True}
+Methods['STAR_Webster_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Webster', 'KP_Transform' : True}
+Methods['hare_ballots_Webster_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Webster', 'KP_Transform' : True}
+
 Methods['utilitarian_allocate_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : True}
-Methods['hare_voters_allocate_kp'] = {'Selection' : 'Hare_Voters', 'Reweight' : 'Allocate', 'KP_Transform' : True}
+Methods['STAR_allocate_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Allocate', 'KP_Transform' : True}
 Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : True}   
 
 
-#path = '../November Results/'
+#path = '../February Results/'
 #path = '../August Results/'
 #path = '../January Results/'
 path = ''
@@ -188,7 +196,7 @@ figA.suptitle('Represenation Metrics')
 
 try:  
     axA1 = figA.add_subplot(3, 2, 1)
-    axA1 = utils.plot_metric(df = df_harmonic_quality, Methods = Methods,axis=axA1,is_int = False)
+    axA1 = utils.plot_metric(df = df_harmonic_quality[method_subset], Methods = Methods,axis=axA1,is_int = False)
     lgd2 = axA1.legend(loc=2)
     axA1.set_xlabel('Harmonic Quality')
     axA1.set_ylabel('Records in bin')
@@ -197,7 +205,7 @@ except:
     
 try:     
     axA2 = figA.add_subplot(3, 2, 2)
-    axA2 = utils.plot_metric(df = df_unitary_quality, Methods = Methods,axis=axA2,is_int = False)
+    axA2 = utils.plot_metric(df = df_unitary_quality[method_subset], Methods = Methods,axis=axA2,is_int = False)
     lgd2 = axA2.legend(loc=2)
     axA2.set_xlabel('Unitary Quality')
     axA2.set_ylabel('Records in bin')
@@ -206,7 +214,7 @@ except:
     
 try:     
     axA3 = figA.add_subplot(3, 2, 3)
-    axA3 = utils.plot_metric(df = df_ebert_cost, Methods = Methods,axis=axA3,is_int = False)
+    axA3 = utils.plot_metric(df = df_ebert_cost[method_subset], Methods = Methods,axis=axA3,is_int = False)
     lgd3 = axA3.legend(loc=2)
     axA3.set_xlabel('Ebert Cost')
     axA3.set_ylabel('Records in bin')
@@ -215,7 +223,7 @@ except:
     
 try:     
     axA4 = figA.add_subplot(3, 2, 4)
-    axA4 = utils.plot_metric(df = df_most_blocking_loser_capture, Methods = Methods,axis=axA4,is_int = False)
+    axA4 = utils.plot_metric(df = df_most_blocking_loser_capture[method_subset], Methods = Methods,axis=axA4,is_int = False)
     lgd4 = axA4.legend(loc=2)
     axA4.set_xlabel('Most Blocking Loser Capture')
     axA4.set_ylabel('Records in bin')
@@ -224,7 +232,7 @@ except:
     
 try:     
     axA5 = figA.add_subplot(3, 2, 5)
-    axA5 = utils.plot_metric(df = df_largest_total_unsatisfied_group, Methods = Methods,axis=axA5,is_int = False)
+    axA5 = utils.plot_metric(df = df_largest_total_unsatisfied_group[method_subset], Methods = Methods,axis=axA5,is_int = False)
     lgd5 = axA5.legend(loc=2)
     axA5.set_xlabel('Largest Totally Unsatisfied Group')
     axA5.set_ylabel('Records in bin')
@@ -233,7 +241,7 @@ except:
     
 try:     
     axA6 = figA.add_subplot(3, 2, 6)
-    axA6 = utils.plot_metric(df = df_average_utility_gain_from_extra_winner, Methods = Methods,axis=axA6,is_int = False)
+    axA6 = utils.plot_metric(df = df_average_utility_gain_from_extra_winner[method_subset], Methods = Methods,axis=axA6,is_int = False)
     lgd6 = axA6.legend(loc=2)
     axA6.set_xlabel('Average Utility Gain From Extra Winner')
     axA6.set_ylabel('Records in bin')

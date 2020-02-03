@@ -129,7 +129,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
                 voters_allocated = cand_df[cand_df[w] > split_point]['ballot_weight'].sum()
 
                 #amount to reweight the voters on the split by (ie surpluss handling)
-                reweighted_value = (votes_to_allocate - voters_allocated)/voters_on_split
+                reweighted_value = 1 - (votes_to_allocate - voters_allocated)/voters_on_split
 
                 #reweight voters on split
                 cand_df.loc[cand_df[w] == split_point, 'ballot_weight'] = cand_df.loc[cand_df[w] == split_point, 'ballot_weight'] * reweighted_value
@@ -230,7 +230,7 @@ def plot_metric(df, Methods,axis,is_int = True):
     #plots metrics
     #colors = ['b','r','k','#FFFF00','g','#808080','#56B4E9','#FF7F00']
     colors = {'Jefferson' : '#FF7F00','Webster' : 'b', 'Allocate' : 'r','Unitary' : 'k',
-              'Jefferson_KP' : '#FFFF00','Webster_KP' : 'c','Allocate_KP' : 'g','Unitary_KP' : '#808080'}
+              'Jefferson_KP' : '#FFFF00','Webster_KP' : 'm','Allocate_KP' : 'g','Unitary_KP' : '#808080'}
     styles = {'Utilitarian' : 'solid', 'STAR' : 'dashed', 'Hare_Ballots' : 'dotted'}
     bins = np.linspace(df.min().min(),df.max().max())
     for i, col in enumerate(df.columns):

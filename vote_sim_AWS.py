@@ -58,6 +58,12 @@ Methods['utilitarian_allocate_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 
 Methods['STAR_allocate_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Allocate', 'KP_Transform' : True}
 Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : True}
 
+Methods['jefferson_ebert'] = {'Selection' : 'NewClass', 'Reweight' : 'Hybrid', 'KP_Transform' : False}
+Methods['sequential_ebert'] = {'Selection' : 'NewClass', 'Reweight' : 'MimicSeqEbert', 'KP_Transform' : False}
+
+Methods['jefferson_ebert_kp'] = {'Selection' : 'NewClass', 'Reweight' : 'Hybrid', 'KP_Transform' : True}
+Methods['sequential_ebert_kp'] = {'Selection' : 'NewClass', 'Reweight' : 'MimicSeqEbert', 'KP_Transform' : True}
+
 
 method_list = sorted(list(Methods.keys()))
 
@@ -136,9 +142,24 @@ for iteration in range(elections):
 
     metrics = {}
 
+    new_class_tensor = None
+    new_class_tensor_kp = None
+
     #Run methods and get metrics
     for method,value in Methods.items():
-        winner_list = utils.get_winners(S_in=S.copy(),Selection = value['Selection'],Reweight = value['Reweight'], KP_Transform = value['KP_Transform'], K=K, W=W)
+        if value['Selection'] == 'NewClass':
+            if new_class_tensor == None:
+                S_new_class = S.copy()
+                new_class_tensor = utils.ScoreTensor(S_new_class.shape[1], K)
+                new_class_tensor_kp = utils.ScoreTensor(S_new_class.shape[1], 1)
+                new_class_tensor.add_ballots(S_new_class.T)
+                for threshold in range(K):
+                    for i in range(S_new_class.shape[1]**2):
+                        new_class_tensor_kp.data[i] += new_class_tensor.data[i+threshold*S_new_class.shape[1]**2]
+            tensor = new_class_tensor_kp if value['KP_Transform'] else new_class_tensor
+            winner_list = S_new_class.columns[tensor.get_winners(W, value['Reweight'])]
+        else:
+            winner_list = utils.get_winners(S_in=S.copy(),Selection = value['Selection'],Reweight = value['Reweight'], KP_Transform = value['KP_Transform'], K=K, W=W)
         metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = winner_list, method = method, K=K)
 
     #Add metrics to dataframes

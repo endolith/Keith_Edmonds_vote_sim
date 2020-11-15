@@ -246,6 +246,22 @@ hare_ballots_allocate_winners_kp = utils.get_winners(S_in=S.copy(),Selection = '
 winners['hare_ballots_allocate_winners_kp'] = hare_ballots_allocate_winners_kp
 metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_ballots_allocate_winners_kp, method = 'hare_ballots_allocate_kp', K=K)
 
+jefferson_ebert_winners = utils.get_winners_new_class(S_in=S.copy(), K=K, W=W, Version='Hybrid')
+winners['jefferson_ebert_winners'] = jefferson_ebert_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = jefferson_ebert_winners, method = 'jefferson_ebert', K=K)
+
+jefferson_ebert_winners_kp = utils.get_winners_new_class(S_in=S.copy(), K=K, W=W, Version='Hybrid', KP_Transform=True)
+winners['jefferson_ebert_winners_kp'] = jefferson_ebert_winners_kp
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = jefferson_ebert_winners_kp, method = 'jefferson_ebert_kp', K=K)
+
+seq_ebert_winners = utils.get_winners_new_class(S_in=S.copy(), K=K, W=W, Version='MimicSeqEbert')
+winners['sequential_ebert_winners'] = seq_ebert_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = seq_ebert_winners, method = 'sequential_ebert', K=K)
+
+seq_ebert_winners_kp = utils.get_winners_new_class(S_in=S.copy(), K=K, W=W, Version='MimicSeqEbert', KP_Transform=True)
+winners['sequential_ebert_winners_kp'] = seq_ebert_winners_kp
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = seq_ebert_winners_kp, method = 'sequential_ebert_kp', K=K)
+
 
 print(pd.DataFrame.from_dict(winners).T)
 

@@ -2,6 +2,98 @@ import pandas as pd
 import numpy as np
 
 
+class ScoreTensor(object):
+    def __init__(self, c, k=5):
+        self.candidates = c
+        self.data = [0] * (k*c*c)
+        self.votes = 0
+    
+    def add_ballot(self, ballot):
+        c = self.candidates
+        for i in range(c):
+            for j in range(c):
+                for k in range(int(len(self.data)/(c*c))):
+                    if ballot[i] > k and ballot[j] > k:
+                        self.data[i*c+j+k*c*c] += 1
+        self.votes += 1
+    
+    def add_ballots(self, ballots):
+        c = self.candidates
+        a = ballots.to_numpy()
+        for k in range(int(len(self.data)/(c*c))):
+            x = np.where(a > k, 1, 0)
+            for i in range(c):
+                for j in range(c):
+                    # Store number of voters who approve both candidates
+                    self.data[i*c+j+k*c*c] += np.dot(x[i], x[j])
+        self.votes += ballots.shape[1]
+    
+    def get_score(self, idx, already_elected, cutoff, version):
+        c = self.candidates
+        idx_votes = self.data[idx*c+idx+cutoff*c*c]
+        if idx_votes == 0:
+            return 0.0
+        d = 1.0
+        # Calculate expected influence of the candidate
+        for i in already_elected:
+            i_votes = self.data[i*c+i+cutoff*c*c]
+            both_votes = self.data[idx*c+i+cutoff*c*c]
+            # MimicSeqEbert: produce the same result as sequential ebert, only faster - https://forum.electionscience.org/t/possible-improvement-to-pamsac-gets-rid-of-cfat/566/19
+            if version == 'MimicSeqEbert':
+                if i_votes == 0:
+                    return 0.0
+                d += 2.0 * both_votes / i_votes
+            # Hybrid: modified sequential ebert that equals jefferson in case of party line voting
+            elif version == 'Hybrid':
+                if i_votes == 0:
+                    return 0.0
+                d += 1.0 * both_votes / i_votes
+        return idx_votes / d
+    
+    def get_next_winner(self, already_elected, seats, version):
+        c = self.candidates
+        idx = []
+        # Calculate hare quota
+        q = 1.0 * self.votes / seats
+        for cutoff in range(int(len(self.data)/(c*c))-1, -1, -1):
+            val = -1.0
+            for i in range(self.candidates):
+                # Uncomment the following two lines to avoid electing duplicates
+                #if i in already_elected:
+                #    continue
+                # Skip candidates that lack a hare quota of supporters
+                if cutoff == 0 or self.get_score(i, already_elected, cutoff - 1, version) >= q:
+                    cur = self.get_score(i, already_elected, cutoff, version)
+                    # Elect the candidate with the highest score
+                    if val == cur:
+                        idx.append(i)
+                    elif val < cur:
+                        val = cur
+                        idx = [i]
+            if idx:
+                # Use higher-level scores to break ties
+                for i in range(cutoff + 1, int(len(self.data)/(c*c))):
+                    if len(idx) == 1:
+                        break
+                    idx2 = []
+                    val = -1.0
+                    for j in idx:
+                        cur = self.get_score(j, already_elected, i, version)
+                        if val == cur:
+                            idx2.append(j)
+                        elif val < cur:
+                            val = cur
+                            idx2 = [j]
+                    idx = idx2
+                break
+        return idx[0]
+    
+    def get_winners(self, seats, version):
+        w = []
+        for i in range(seats):
+            w.append(self.get_next_winner(w, seats, version))
+        return w
+
 def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=False, W=5, K=5):
     """
     Turn scores into a winner set for various systems
@@ -143,6 +235,33 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
 
     return winner_list
 
+def get_winners_new_class(S_in, W, K=5, Version='MimicSeqEbert', KP_Transform=False):
+    """
+    Turn scores into a winner set for various new class systems
+
+    This wrapper function is relatively slow. For long simulations, use ScoreTensor directly.
+
+    Parameters
+    ----------
+    W : int
+        Exact number of winners to return.
+    K : int, optional
+        Maximum possible score. Default is 5.
+    Version : {'MimicSeqEbert', 'Hybrid'}, optional
+        Default is 'MimicSeqEbert'
+    """
+    if KP_Transform:
+        # The KP transform changes each voter into a set of K approval voters
+        groups = []
+        for threshold in range(K):
+            groups.append(np.where(S_in.values > threshold, 1, 0))
+        S_wrk = pd.DataFrame(np.concatenate(groups), columns=S_in.columns)
+    else:
+        S_wrk = S_in
+    t = ScoreTensor(S_wrk.shape[1], K)
+    t.add_ballots(S_wrk.T)
+    return S_in.columns[t.get_winners(W, Version)]
+
 #Method to get all output quality metrics for a winner set
 
 def get_metrics(S_in,metrics,winner_list,method,K=5):
@@ -230,8 +349,9 @@ def plot_metric(df, Methods,axis,is_int = True):
     #plots metrics
     #colors = ['b','r','k','#FFFF00','g','#808080','#56B4E9','#FF7F00']
     colors = {'Jefferson' : '#FF7F00','Webster' : 'b', 'Allocate' : 'r','Unitary' : 'k',
-              'Jefferson_KP' : '#FFFF00','Webster_KP' : 'm','Allocate_KP' : 'g','Unitary_KP' : '#808080'}
-    styles = {'Utilitarian' : 'solid', 'STAR' : 'dashed', 'Hare_Ballots' : 'dotted'}
+              'Jefferson_KP' : '#FFFF00','Webster_KP' : 'm','Allocate_KP' : 'g','Unitary_KP' : '#808080',
+              'MimicSeqEbert' : '#00FFFF', 'MimicSeqEbert_KP' : '#55AAFF', 'Hybrid' : '#5500FF', 'Hybrid_KP' : '#AA00FF'}
+    styles = {'Utilitarian' : 'solid', 'STAR' : 'dashed', 'Hare_Ballots' : 'dotted', 'NewClass' : '-.'}
     bins = np.linspace(df.min().min(),df.max().max())
     for i, col in enumerate(df.columns):
         reweight = Methods[col]['Reweight']

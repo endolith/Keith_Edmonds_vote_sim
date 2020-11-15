@@ -37,6 +37,12 @@ Methods['utilitarian_allocate_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 
 Methods['STAR_allocate_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Allocate', 'KP_Transform' : True}
 Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : True}   
 
+Methods['jefferson_ebert'] = {'Selection' : 'NewClass', 'Reweight' : 'Hybrid', 'KP_Transform' : False}
+Methods['sequential_ebert'] = {'Selection' : 'NewClass', 'Reweight' : 'MimicSeqEbert', 'KP_Transform' : False}
+
+Methods['jefferson_ebert_kp'] = {'Selection' : 'NewClass', 'Reweight' : 'Hybrid', 'KP_Transform' : True}
+Methods['sequential_ebert_kp'] = {'Selection' : 'NewClass', 'Reweight' : 'MimicSeqEbert', 'KP_Transform' : True}
+
 
 #path = '../February Results/'
 #path = '../August Results/'

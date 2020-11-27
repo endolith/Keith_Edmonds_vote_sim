@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=False, W=5, K=5):
+def get_winners(S_in, Selection='Utilitarian', Reweight='Cap Score', KP_Transform=False, W=5, K=5):
     """
     Turn scores into a winner set for various systems
 
@@ -12,8 +12,8 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
         Table of scores given to each candidate by each voter
     Selection : {'Utilitarian', 'STAR', 'Hare_Ballots'}, optional
         Default is 'Utilitarian'
-    Reweight : {'Unitary', 'Jefferson', 'Webster', 'Allocate'}, optional
-        Default is 'Unitary'
+    Reweight : {'Cap Score', 'Scale Score','Jefferson', 'Webster', 'Allocate', 'Allocate Current''}, optional
+        Default is 'Cap Score'
     W : int, optional
         Maximum number of winners to return. Default is 5.
     K : int, optional
@@ -39,7 +39,8 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
     S_orig = S_wrk.copy()
 
     # These only matter for specific systems and are initialized here
-    ballot_weight = pd.Series(np.ones(V))
+    ballot_weight = pd.Series(np.ones(V),name='ballot_weight')
+    
 
     # Populate winners in a loop
     winner_list = []
@@ -81,7 +82,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
         winner_list.append(w)
 
         #Reweight the working scores
-        if Reweight == 'Unitary':
+        if Reweight == 'Cap Score':
             surplus_factor = max( S_wrk[w].sum() *W/V , 1.0)
 
             #Score spent on each winner by each voter
@@ -89,7 +90,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
             # print('Score Spent ',score_spent.sum())
 
             #Total score left to be spent by each voter
-            ballot_weight = np.clip(ballot_weight-score_spent,0.0,1.0)
+            ballot_weight = (ballot_weight-score_spent).clip(0.0,1.0)
 
             #Update Ballots
             #set scores to zero for winner so they don't win again
@@ -98,7 +99,18 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
             #Take score off of ballot (ie reweight)
             mins = np.minimum(S_wrk.values,ballot_weight.values[:, np.newaxis])
             S_wrk = pd.DataFrame(mins, columns = S_wrk.columns)
+        
+        elif Reweight == 'Scale Score':
+
+            #Check for Surplus
+            surplus_factor = max( S_wrk[w].sum() *W/V , 1.0)
             
+            score_spent = S_wrk[w]/ surplus_factor
+            
+            #Total score left to be spent by each voter
+            ballot_weight = (ballot_weight-score_spent).clip(0.0,1.0)
+        
+            S_wrk = S_orig.mul(ballot_weight, axis = 0)
         elif Reweight == 'Jefferson':
             total_sum =  S_orig[winner_list].sum(axis=1)
             #Ballot weight as defined by the Jefferson method
@@ -112,9 +124,9 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
             S_wrk = S_orig.mul(ballot_weight, axis = 0)
             
         elif Reweight == 'Allocate':
-            votes_to_allocate = round(V/W)
-            cand_df = S_orig[[w]].copy()
-            cand_df['ballot_weight'] = ballot_weight
+            quota = round(V/W) 
+
+            cand_df = pd.concat([ballot_weight,S_orig[w]], axis=1).copy() 
             cand_df_sort = cand_df.sort_values(by=[w], ascending=False)
             
             #find the score where everybody abote is allocated
@@ -129,7 +141,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
                 voters_allocated = cand_df[cand_df[w] > split_point]['ballot_weight'].sum()
 
                 #amount to reweight the voters on the split by (ie surpluss handling)
-                reweighted_value = 1 - (votes_to_allocate - voters_allocated)/voters_on_split
+                reweighted_value = 1 - (quota - voters_allocated)/voters_on_split
 
                 #reweight voters on split
                 cand_df.loc[cand_df[w] == split_point, 'ballot_weight'] = cand_df.loc[cand_df[w] == split_point, 'ballot_weight'] * reweighted_value
@@ -141,6 +153,44 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Unitary', KP_Transform=
             ballot_weight = cand_df['ballot_weight']
             S_wrk = S_orig.mul(ballot_weight, axis = 0)
 
+        elif Reweight == 'Allocate Current':
+            quota = round(V/W) 
+             #Create lists for manipulation
+            cand_df = pd.concat([ballot_weight,S_wrk[w]], axis=1).copy() 
+            cand_df_sort = cand_df.sort_values(by=[w], ascending=False).copy()  
+            
+            #find the score where a quota is filled
+            split_point = cand_df_sort[cand_df_sort['ballot_weight'].cumsum() < V/W][w].min()
+            #print('split_point',split_point*5)
+            
+            #Amount of ballot for voters who voted more than the split point
+            spent_above = cand_df[cand_df[w] > split_point]['ballot_weight'].sum()
+            #print('spent_above',spent_above)
+            
+            #Exhaust all ballots above split point
+            if spent_above>0:    
+                cand_df.loc[cand_df[w] > split_point, 'ballot_weight'] = 0.0
+        
+            #if split point = 0 then the winner did not get a full quota of support
+            #otherwise there is a surplus    
+    
+            #Amount of ballot for voters who gave a score on the split point
+            weight_on_split = cand_df[cand_df[w] == split_point]['ballot_weight'].sum()
+            #print('weight_on_split',weight_on_split)
+    
+            if weight_on_split>0:     
+                #Fraction of ballot on split needed to be spent
+                spent_value = (quota - spent_above)/weight_on_split
+        
+                #Take the spent value from the voters on the threshold evenly
+                cand_df.loc[cand_df[w] == split_point, 'ballot_weight'] = cand_df.loc[cand_df[w] == split_point, 'ballot_weight'] * (1 - spent_value)
+        
+        
+            #print('Fraction of quota spent ', (ballot_weight.sum() - cand_df['ballot_weight'].sum())/quota)
+            #ballot_weight = cand_df['ballot_weight'].clip(0.0,1.0)
+            ballot_weight = cand_df['ballot_weight']
+            S_wrk = S_orig.mul(ballot_weight, axis = 0)
+            
     return winner_list
 
 #Method to get all output quality metrics for a winner set
@@ -229,8 +279,8 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
 def plot_metric(df, Methods,axis,is_int = True):
     #plots metrics
     #colors = ['b','r','k','#FFFF00','g','#808080','#56B4E9','#FF7F00']
-    colors = {'Jefferson' : '#FF7F00','Webster' : 'b', 'Allocate' : 'r','Unitary' : 'k',
-              'Jefferson_KP' : '#FFFF00','Webster_KP' : 'm','Allocate_KP' : 'g','Unitary_KP' : '#808080'}
+    colors = {'Jefferson' : '#FF7F00','Webster' : 'b', 'Allocate' : 'r','Cap Score' : 'k',
+              'Allocate Current' : '#FFFF00','Scale Score' : 'm','Allocate_KP' : 'g','Cap Score_KP' : '#808080'}
     styles = {'Utilitarian' : 'solid', 'STAR' : 'dashed', 'Hare_Ballots' : 'dotted'}
     bins = np.linspace(df.min().min(),df.max().max())
     for i, col in enumerate(df.columns):

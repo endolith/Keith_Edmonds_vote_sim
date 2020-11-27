@@ -8,12 +8,13 @@ from mpl_toolkits.mplot3d import Axes3D
 import utils 
 # Types of problems to handle
 # https://www.rangevoting.org/AssetBC.html
-# https://groups.google.com/forum/#!topic/electionscience/Rk4ZGf-s-s8
+# https://bs.google.com/forum/#!topic/electionscience/Rk4ZGf-s-s8
 
 centerists = False
 #centerists = True
 #maximize = False
 maximize = True
+minimize = True
 
 #Number of winners
 W = 5
@@ -24,26 +25,26 @@ K = 5
 voter_groups = []
 
 #Three parties
-# mean_red = [-2.5*np.sqrt(3), 2.5]
-# cov_red = [[5, 0], [0, 5]]  # diagonal covariance
-# pos_red = np.random.multivariate_normal(mean_red, cov_red, 5000)
-# df_red = pd.DataFrame.from_records(pos_red, columns = ['x','y'])
-# df_red['colour'] = 'red'
-# voter_groups.append(df_red)
-# 
-# mean_green = [0, -5]
-# cov_green = [[5, 0], [0, 5]]  # diagonal covariance
-# pos_green = np.random.multivariate_normal(mean_green, cov_green, 5000)
-# df_green = pd.DataFrame.from_records(pos_green, columns = ['x','y'])
-# df_green['colour'] = 'green'
-# voter_groups.append(df_green)
-# 
-# mean_blue = [2.5*np.sqrt(3), 2.5]
-# cov_blue = [[5, 0], [0, 5]]  # diagonal covariance
-# pos_blue = np.random.multivariate_normal(mean_blue, cov_blue, 5000)
-# df_blue = pd.DataFrame.from_records(pos_blue, columns = ['x','y'])
-# df_blue['colour'] = 'blue'
-# voter_groups.append(df_blue)
+mean_red = [2, -2]
+cov_red = [[5, -2], [-2, 2]]  # diagonal covariance
+pos_red = np.random.multivariate_normal(mean_red, cov_red, 5000)
+df_red = pd.DataFrame.from_records(pos_red, columns = ['x','y'])
+df_red['colour'] = 'red'
+voter_groups.append(df_red)
+
+mean_green = [0, 0]
+cov_green = [[0.5, 0], [0, 0.5]]  # diagonal covariance
+pos_green = np.random.multivariate_normal(mean_green, cov_green, 5000)
+df_green = pd.DataFrame.from_records(pos_green, columns = ['x','y'])
+df_green['colour'] = 'green'
+voter_groups.append(df_green)
+
+mean_blue = [2, 2]
+cov_blue = [[2, 2], [2, 5]]  # diagonal covariance
+pos_blue = np.random.multivariate_normal(mean_blue, cov_blue, 5000)
+df_blue = pd.DataFrame.from_records(pos_blue, columns = ['x','y'])
+df_blue['colour'] = 'blue'
+voter_groups.append(df_blue)
 # 
 # candidates = [['A',0,0],
 #                 ['Z',0,2.5],
@@ -57,52 +58,58 @@ voter_groups = []
 #                 ['B2',2.5*np.sqrt(3),2.5],
 #                 ['B3',4*np.sqrt(3), 4]]
 
-#4 parties
-mean_red = [-1.5, 1.5]
-cov_red = [[1, 0], [0, 1]]  # diagonal covariance
-pos_red = np.random.multivariate_normal(mean_red, cov_red, 4000)
-df_red = pd.DataFrame.from_records(pos_red, columns = ['x','y'])
-df_red['colour'] = 'red'
-voter_groups.append(df_red)
+# #4 parties
+# mean_red = [-1.5, 1.5]
+# cov_red = [[1, 0], [0, 1]]  # diagonal covariance
+# pos_red = np.random.multivariate_normal(mean_red, cov_red, 4000)
+# df_red = pd.DataFrame.from_records(pos_red, columns = ['x','y'])
+# df_red['colour'] = 'red'
+# voter_groups.append(df_red)
 
-mean_green = [-1.5, -1.5]
-cov_green = [[1, 0], [0, 1]]  # diagonal covariance
-pos_green = np.random.multivariate_normal(mean_green, cov_green, 1500)
-df_green = pd.DataFrame.from_records(pos_green, columns = ['x','y'])
-df_green['colour'] = 'green'
-voter_groups.append(df_green)
+# mean_green = [-1.5, -1.5]
+# cov_green = [[1, 0], [0, 1]]  # diagonal covariance
+# pos_green = np.random.multivariate_normal(mean_green, cov_green, 1500)
+# df_green = pd.DataFrame.from_records(pos_green, columns = ['x','y'])
+# df_green['colour'] = 'green'
+# voter_groups.append(df_green)
 
-mean_blue = [1.5, 1.5]
-cov_blue = [[1, 0], [0, 1]]  # diagonal covariance
-pos_blue = np.random.multivariate_normal(mean_blue, cov_blue, 2000)
-df_blue = pd.DataFrame.from_records(pos_blue, columns = ['x','y'])
-df_blue['colour'] = 'blue'
-voter_groups.append(df_blue)
+# mean_blue = [1.5, 1.5]
+# cov_blue = [[1, 0], [0, 1]]  # diagonal covariance
+# pos_blue = np.random.multivariate_normal(mean_blue, cov_blue, 2000)
+# df_blue = pd.DataFrame.from_records(pos_blue, columns = ['x','y'])
+# df_blue['colour'] = 'blue'
+# voter_groups.append(df_blue)
 
-mean_yellow = [1.5, -1.5]
-cov_yellow = [[1, 0], [0, 1]]  # diagonal covariance
-pos_yellow = np.random.multivariate_normal(mean_yellow, cov_yellow, 2500)
-df_yellow = pd.DataFrame.from_records(pos_yellow, columns = ['x','y'])
-df_yellow['colour'] = 'yellow'
-voter_groups.append(df_yellow)
+# mean_yellow = [1.5, -1.5]
+# cov_yellow = [[1, 0], [0, 1]]  # diagonal covariance
+# pos_yellow = np.random.multivariate_normal(mean_yellow, cov_yellow, 2500)
+# df_yellow = pd.DataFrame.from_records(pos_yellow, columns = ['x','y'])
+# df_yellow['colour'] = 'yellow'
+# voter_groups.append(df_yellow)
+
+# candidates = [
+#                 ['A',0,0],
+#                 ['Z1',0,0.5],
+#                 ['Z2',0,1.5],
+#                 ['Z3',0,2.5],
+#                 ['R1',-0.5, 0.5],
+#                 ['R2',-1.5, 1.5],
+#                 ['R3',-2.5, 2.5],
+#                 ['G1',-0.5, -0.5],
+#                 ['G2',-1.5, -1.5],
+#                 ['G3',-2.5, -2.5],
+#                 ['B1',0.5, 0.5],
+#                 ['B2',1.5, 1.5],
+#                 ['B3',2.5, 2.5],
+#                 ['Y1',0.5, -0.5],
+#                 ['Y2',1.5, -1.5],
+#                 ['Y3',2.5, -2.5]
+#                                         ]
 
 candidates = [
-                ['A',0,0],
-                ['Z1',0,0.5],
-                ['Z2',0,1.5],
-                ['Z3',0,2.5],
-                ['R1',-0.5, 0.5],
-                ['R2',-1.5, 1.5],
-                ['R3',-2.5, 2.5],
-                ['G1',-0.5, -0.5],
-                ['G2',-1.5, -1.5],
-                ['G3',-2.5, -2.5],
-                ['B1',0.5, 0.5],
-                ['B2',1.5, 1.5],
-                ['B3',2.5, 2.5],
-                ['Y1',0.5, -0.5],
-                ['Y2',1.5, -1.5],
-                ['Y3',2.5, -2.5]
+                ['A',2.5,-2.5],
+                ['B',0, 0],
+                ['C',2.5, 2.5]
                                         ]
 
 df_can = pd.DataFrame.from_records(candidates, columns = ['Name','x','y'] )
@@ -124,7 +131,7 @@ ax2 = fig.add_subplot(1, 2, 2)
 ax2.plot(df_red['x'],df_red['y'],".",label = 'Red', color='r') 
 ax2.plot(df_green['x'],df_green['y'],".",label = 'Green', color='g') 
 ax2.plot(df_blue['x'],df_blue['y'],".",label = 'Blue', color='b')
-ax2.plot(df_yellow['x'],df_yellow['y'],".",label = 'Yellow', color='y')
+#ax2.plot(df_yellow['x'],df_yellow['y'],".",label = 'Yellow', color='y')
 
 #Candidates
 for c in candidates:
@@ -196,55 +203,58 @@ for c in candidates:
     distance[c[0]] = df_voters[['x', 'y']].sub(np.array([c[1], c[2]])).pow(2).sum(1).pow(0.5)    
     S[c[0]] = round(np.clip(K - 2.0*distance[c[0]], 0.0, K))
 
+
 #rowwise max set to 5
 if maximize:
     columns = distance.idxmin('columns')
     for index in S.index:
         S.loc[index,columns[index]] = 5
 
+
+#rowwise min set to 0
+if minimize:
+    columns = distance.idxmax('columns')
+    for index in S.index:
+        S.loc[index,columns[index]] = 0
+
+
+S_temp = S.copy()
+S_temp['colour'] = df_voters['colour']
+print(S_temp.groupby('colour').mean())
+
 # 
 winners = {}
 metrics = {}
 
-utilitarian_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Unitary', K=K, W=W)
-winners['utilitarian_unitary_winners'] = utilitarian_unitary_winners
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_unitary_winners, method = 'utilitarian_unitary', K=K)
+#SSS with scaling
+utilitarian_scale_score_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Scale Score', K=K, W=W)
+winners['utilitarian_scale_score_winners'] = utilitarian_scale_score_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_scale_score_winners, method = 'utilitarian_scale_score', K=K)
 
-STAR_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'STAR',Reweight = 'Unitary', K=K, W=W)
-winners['STAR_unitary_winners'] = STAR_unitary_winners
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = STAR_unitary_winners, method = 'STAR_unitary', K=K)
+#SSS with capping
+utilitarian_cap_score_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Cap Score', K=K, W=W)
+winners['utilitarian_cap_score_winners'] = utilitarian_cap_score_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_cap_score_winners, method = 'utilitarian_cap_score', K=K)
 
-hare_ballots_unitary_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Unitary', K=K, W=W)
-winners['hare_ballots_unitary_winners'] = hare_ballots_unitary_winners
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_ballots_unitary_winners, method = 'hare_ballots_unitary', K=K)
+utilitarian_webster_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Webster', K=K, W=W)
+winners['utilitarian_webster_winners'] = utilitarian_webster_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_webster_winners, method = 'utilitarian_webster', K=K)
 
 utilitarian_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Jefferson', K=K, W=W)
 winners['utilitarian_jefferson_winners'] = utilitarian_jefferson_winners
 metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_jefferson_winners, method = 'utilitarian_jefferson', K=K)
 
-STAR_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'STAR',Reweight = 'Jefferson', K=K, W=W) 
-winners['STAR_jefferson_winners'] = STAR_jefferson_winners
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = STAR_jefferson_winners, method = 'STAR_jefferson', K=K)
-
-hare_ballots_jefferson_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Jefferson', K=K, W=W) 
-winners['hare_ballots_jefferson_winners'] = hare_ballots_jefferson_winners
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_ballots_jefferson_winners, method = 'hare_ballots_jefferson', K=K)
-
 utilitarian_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Allocate', K=K, W=W)
 winners['utilitarian_allocate_winners'] = utilitarian_allocate_winners
 metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_allocate_winners, method = 'utilitarian_allocate', K=K)
 
-STAR_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'STAR',Reweight = 'Allocate', K=K, W=W) 
-winners['STAR_allocate_winners'] = STAR_allocate_winners
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = STAR_allocate_winners, method = 'STAR_allocate', K=K)
+utilitarian_allocate_current_winners = utils.get_winners(S_in=S.copy(),Selection = 'Utilitarian',Reweight = 'Allocate Current', K=K, W=W)
+winners['utilitarian_allocate_current_winners'] = utilitarian_allocate_current_winners
+metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = utilitarian_allocate_current_winners, method = 'utilitarian_allocate_current', K=K)
 
 hare_ballots_allocate_winners = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Allocate', K=K, W=W) 
 winners['hare_ballots_allocate_winners'] = hare_ballots_allocate_winners
 metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_ballots_allocate_winners, method = 'hare_ballots_allocate', K=K)
-
-hare_ballots_allocate_winners_kp = utils.get_winners(S_in=S.copy(),Selection = 'Hare_Ballots',Reweight = 'Allocate', KP_Transform=True , K=K, W=W) 
-winners['hare_ballots_allocate_winners_kp'] = hare_ballots_allocate_winners_kp
-metrics = utils.get_metrics(S_in=S.copy(), metrics =metrics, winner_list = hare_ballots_allocate_winners_kp, method = 'hare_ballots_allocate_kp', K=K)
 
 
 print(pd.DataFrame.from_dict(winners).T)

@@ -26,37 +26,49 @@ elections = 5000 #number of simulations
 #Define Data frames to store the results of each iteration
 Methods = {}
 
-Methods['utilitarian_unitary'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Unitary', 'KP_Transform' : False} #Sequentially Spent Score
-Methods['STAR_unitary'] = {'Selection' : 'STAR', 'Reweight' : 'Unitary', 'KP_Transform' : False}
-Methods['hare_ballots_unitary'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Unitary', 'KP_Transform' : False}
+Methods['utilitarian_scale_score'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Scale Score', 'KP_Transform' : False} #Sequentially Spent Score with Capping
+# Methods['STAR_scale_score'] = {'Selection' : 'STAR', 'Reweight' : 'Scale Score', 'KP_Transform' : False}
+# Methods['hare_ballots_scale_score'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Scale Score', 'KP_Transform' : False}
 
-Methods['utilitarian_jefferson'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : False} #Reweighted Range Voting
-Methods['STAR_jefferson'] = {'Selection' : 'STAR', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
-Methods['hare_ballots_jefferson'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
+Methods['utilitarian_cap_score'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Cap Score', 'KP_Transform' : False} #Sequentially Spent Score With Scaling
+# Methods['STAR_cap_score'] = {'Selection' : 'STAR', 'Reweight' : 'Cap Score', 'KP_Transform' : False}
+# Methods['hare_ballots_cap_score'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Cap Score', 'KP_Transform' : False}
 
-Methods['utilitarian_Webster'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Webster', 'KP_Transform' : False} #Reweighted Range Voting
-Methods['STAR_Webster'] = {'Selection' : 'STAR', 'Reweight' : 'Webster', 'KP_Transform' : False}
-Methods['hare_ballots_Webster'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Webster', 'KP_Transform' : False}
+# Methods['utilitarian_jefferson'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : False} #Reweighted Range Voting Jefferson
+# Methods['STAR_jefferson'] = {'Selection' : 'STAR', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
+# Methods['hare_ballots_jefferson'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : False}
 
-Methods['utilitarian_allocate'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Allocated Score
-Methods['STAR_allocate'] = {'Selection' : 'STAR', 'Reweight' : 'Allocate', 'KP_Transform' : False}
+Methods['utilitarian_Webster'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Webster', 'KP_Transform' : False} #Reweighted Range Voting Webster
+# Methods['STAR_Webster'] = {'Selection' : 'STAR', 'Reweight' : 'Webster', 'KP_Transform' : False}
+# Methods['hare_ballots_Webster'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Webster', 'KP_Transform' : False}
+
+Methods['utilitarian_allocate'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Allocated Score sorted by original
+# Methods['STAR_allocate'] = {'Selection' : 'STAR', 'Reweight' : 'Allocate', 'KP_Transform' : False}
 Methods['hare_ballots_allocate'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : False} #Sequential Monroe
 
-Methods['utilitarian_unitary_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Unitary', 'KP_Transform' : True}
-Methods['STAR_unitary_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Unitary', 'KP_Transform' : True}
-Methods['hare_ballots_unitary_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Unitary', 'KP_Transform' : True}
+Methods['utilitarian_allocate_current'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate Current', 'KP_Transform' : False} #Allocated Score sorted by current
+# Methods['STAR_allocate_current'] = {'Selection' : 'STAR', 'Reweight' : 'Allocate Current', 'KP_Transform' : False}
+#Methods['hare_ballots_allocate_current'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate Current', 'KP_Transform' : False} 
 
-Methods['utilitarian_jefferson_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
-Methods['STAR_jefferson_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
-Methods['hare_ballots_jefferson_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
+# Methods['utilitarian_scale_score_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Scale Score', 'KP_Transform' : True}
+# Methods['STAR_scale_score_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Scale Score', 'KP_Transform' : True}
+# Methods['hare_ballots_scale_score_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Scale Score', 'KP_Transform' : True}
 
-Methods['utilitarian_Webster_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Webster', 'KP_Transform' : True}
-Methods['STAR_Webster_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Webster', 'KP_Transform' : True}
-Methods['hare_ballots_Webster_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Webster', 'KP_Transform' : True}
+# Methods['utilitarian_cap_score_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Cap Score', 'KP_Transform' : True}
+# Methods['STAR_cap_score_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Cap Score', 'KP_Transform' : True}
+# Methods['hare_ballots_cap_score_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Cap Score', 'KP_Transform' : True}
+
+# Methods['utilitarian_jefferson_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
+# Methods['STAR_jefferson_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
+# Methods['hare_ballots_jefferson_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Jefferson', 'KP_Transform' : True}
+
+# Methods['utilitarian_Webster_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Webster', 'KP_Transform' : True}
+# Methods['STAR_Webster_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Webster', 'KP_Transform' : True}
+# Methods['hare_ballots_Webster_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Webster', 'KP_Transform' : True}
 #
-Methods['utilitarian_allocate_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : True}
-Methods['STAR_allocate_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Allocate', 'KP_Transform' : True}
-Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : True}
+#Methods['utilitarian_allocate_kp'] = {'Selection' : 'Utilitarian', 'Reweight' : 'Allocate', 'KP_Transform' : True}
+# Methods['STAR_allocate_kp'] = {'Selection' : 'STAR', 'Reweight' : 'Allocate', 'KP_Transform' : True}
+#Methods['hare_ballots_allocate_kp'] = {'Selection' : 'Hare_Ballots', 'Reweight' : 'Allocate', 'KP_Transform' : True}
 
 
 method_list = sorted(list(Methods.keys()))

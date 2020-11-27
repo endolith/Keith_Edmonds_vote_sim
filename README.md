@@ -3,12 +3,12 @@ This code will simulate scoring on candidates and apply electoral systems to eva
 There are three selection methods: `Utilitarian`, `STAR` and `Hare_Ballots` . 
 These choose winners from all candidates based on the voters' scores.
 
-There are four Reweight methods: `Jefferson`, `Webster`, `Unitary` and `Allocate`.
+There are four Reweight methods: `Jefferson`, `Webster`, `Scale Score`, `Cap Score`, `Allocate` and `Allocate Current`.
 These alter the scores between rounds based on the winner to ensure an outcome which passes the standard criteria for Proportional Representation.
 
-All combinations are possible, which means that there are 12 basic systems.
+All combinations are possible, which means that there are 18 basic systems. Not all systems are 'good' or pass even basic criteria.
 
-There is also the option of applying the KP transform to any system which means there are 24 possible systems. 
+There is also the option of applying the KP transform to any system which means there are 36 possible systems. Some systems become the same under the KP transform.
 
 We know from the Gibbard-Satterthwaite theorem, as well as the Balinski & Young's Impossibility Theorem, that there is no chance to make a perfect method. The task is then to mitigate the consequences of the flaws to get the best results in the end. To judge "best", many evaluation metrics are plotted for each system to compared under. 
 
@@ -26,17 +26,16 @@ In any case this gives three coded selection methods:
 2. STAR: Top two Utilitarian then a pairwise runoff
 3. Hare Ballots: Sum of score in Hare quota of ballots
 
-There are also three coded Reweight methods:
+There are also six coded Reweight methods:
 
 1. Jefferson: Reweight by 1/(1+SUM/MAX)
-
 2. Webster: Reweight by 1/(1+2*SUM/MAX)
+3. Cap Score: Subtract the score given from the ballot weight and take the min of the original score and the ballot weight
+4. Sale Score: Subtract the score given from the ballot weight and multiply by original score
+5. Allocation: Exhaust whole ballots by allocating them to winners sorted by original score given
+6. Allocation Current: Exhaust whole ballots by allocating them to winners sorted by current score to winner
 
-3. Unitary: Subtract SUM/MAX until exhausted
-
-4. Allocation: Exhaust whole ballots by allocating them to winners 
-
-Note that both 3 and 4 require surplus handing and fractional surplus handling was done for both but in slightly differing ways according to their theory.
+Note that 3 - 6 require surplus handing and the difference between 5 and 6 only happens where it is needed.
 
 Standard systems can be produced in this manner. For example Reweighted Range voting is Utilitarian selection with Jefferson Reweighting. Calling the function `get_winners()` will return a list of winners.
 

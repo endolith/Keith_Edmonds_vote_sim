@@ -193,6 +193,23 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Cap Score', KP_Transfor
             
     return winner_list
 
+def get_winners_phragmen(S_in, W=5):
+    # The KP transform changes each voter into a set of K approval voters
+    groups = []
+    for threshold in range(K):
+        groups.append(np.where(S_in.values > threshold, 1, 0))
+    S_wrk = pd.DataFrame(np.concatenate(groups), columns=S_in.columns)
+    S_orig = S_wrk.copy()
+    ballot_load = pd.Series(np.zeros(V))
+    winner_list = []
+    while len(winner_list) < W:
+        S_wrk = (S_orig.mul(ballot_load).sum()+1).div(S_orig.sum())
+        min_load = S_wrk.min()
+        w = S_wrk.idxmin()
+        winner_list.append(w)
+        ballot_load = ballot_load.mul(1-S_orig[w]) + min_load*S_orig[w]
+    return winner_list
+
 #Method to get all output quality metrics for a winner set
 
 def get_metrics(S_in,metrics,winner_list,method,K=5):

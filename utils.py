@@ -25,9 +25,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Cap Score', KP_Transfor
     # Create the working set of scores
     if KP_Transform:
         # The KP transform changes each voter into a set of K approval voters
-        groups = []
-        for threshold in range(K):
-            groups.append(np.where(S_in.values > threshold, 1, 0))
+        groups = [np.where(S_in.values > threshold, 1, 0) for threshold in range(K)]
         S_wrk = pd.DataFrame(np.concatenate(groups), columns=S_in.columns)
     else:
         # Normalise so scores are in [0, 1]
@@ -40,7 +38,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Cap Score', KP_Transfor
 
     # These only matter for specific systems and are initialized here
     ballot_weight = pd.Series(np.ones(V),name='ballot_weight')
-    
+
 
     # Populate winners in a loop
     winner_list = []
@@ -69,10 +67,10 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Cap Score', KP_Transfor
 
             # Accumulated weights under threshold
             thres = (sums < V/W)
-            
+
             #Weight Scores
             weighted_scores = S_orig.mul(ballot_weight, axis = 0)
-            
+
             # Sum scores for candidates under threshold
             c_score = np.sum(thres * np.take_along_axis(weighted_scores.values, sort_idx, axis=0),axis=0)
             w = S_orig.columns[np.argmax(c_score)]
@@ -99,36 +97,36 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Cap Score', KP_Transfor
             #Take score off of ballot (ie reweight)
             mins = np.minimum(S_wrk.values,ballot_weight.values[:, np.newaxis])
             S_wrk = pd.DataFrame(mins, columns = S_wrk.columns)
-        
+
         elif Reweight == 'Scale Score':
 
             #Check for Surplus
             surplus_factor = max( S_wrk[w].sum() *W/V , 1.0)
-            
+
             score_spent = S_wrk[w]/ surplus_factor
-            
+
             #Total score left to be spent by each voter
             ballot_weight = (ballot_weight-score_spent).clip(0.0,1.0)
-        
+
             S_wrk = S_orig.mul(ballot_weight, axis = 0)
         elif Reweight == 'Jefferson':
             total_sum =  S_orig[winner_list].sum(axis=1)
             #Ballot weight as defined by the Jefferson method
             ballot_weight = 1/(total_sum + 1)
             S_wrk = S_orig.mul(ballot_weight, axis = 0)
-        
+
         elif Reweight == 'Webster':
             total_sum =  S_orig[winner_list].sum(axis=1)
             #Ballot weight as defined by the Webster method
             ballot_weight = 1/(2*total_sum + 1)
             S_wrk = S_orig.mul(ballot_weight, axis = 0)
-            
+
         elif Reweight == 'Allocate':
             quota = round(V/W) 
 
             cand_df = pd.concat([ballot_weight,S_orig[w]], axis=1).copy() 
             cand_df_sort = cand_df.sort_values(by=[w], ascending=False)
-            
+
             #find the score where everybody abote is allocated
             split_point = cand_df_sort[cand_df_sort['ballot_weight'].cumsum() < V/W][w].iloc[-1]
 
@@ -136,7 +134,7 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Cap Score', KP_Transfor
             if split_point>0:
                 #Amount of ballot for voters who voted on the split point
                 voters_on_split = cand_df[cand_df[w] == split_point]['ballot_weight'].sum()
-                
+
                 #Amount of ballot for voters who voted more than the split point
                 voters_allocated = cand_df[cand_df[w] > split_point]['ballot_weight'].sum()
 
@@ -158,39 +156,39 @@ def get_winners(S_in, Selection='Utilitarian', Reweight='Cap Score', KP_Transfor
              #Create lists for manipulation
             cand_df = pd.concat([ballot_weight,S_wrk[w]], axis=1).copy() 
             cand_df_sort = cand_df.sort_values(by=[w], ascending=False).copy()  
-            
+
             #find the score where a quota is filled
             split_point = cand_df_sort[cand_df_sort['ballot_weight'].cumsum() < V/W][w].min()
             #print('split_point',split_point*5)
-            
+
             #Amount of ballot for voters who voted more than the split point
             spent_above = cand_df[cand_df[w] > split_point]['ballot_weight'].sum()
             #print('spent_above',spent_above)
-            
+
             #Exhaust all ballots above split point
             if spent_above>0:    
                 cand_df.loc[cand_df[w] > split_point, 'ballot_weight'] = 0.0
-        
+
             #if split point = 0 then the winner did not get a full quota of support
             #otherwise there is a surplus    
-    
+
             #Amount of ballot for voters who gave a score on the split point
             weight_on_split = cand_df[cand_df[w] == split_point]['ballot_weight'].sum()
             #print('weight_on_split',weight_on_split)
-    
+
             if weight_on_split>0:     
                 #Fraction of ballot on split needed to be spent
                 spent_value = (quota - spent_above)/weight_on_split
-        
+
                 #Take the spent value from the voters on the threshold evenly
                 cand_df.loc[cand_df[w] == split_point, 'ballot_weight'] = cand_df.loc[cand_df[w] == split_point, 'ballot_weight'] * (1 - spent_value)
-        
-        
+
+
             #print('Fraction of quota spent ', (ballot_weight.sum() - cand_df['ballot_weight'].sum())/quota)
             #ballot_weight = cand_df['ballot_weight'].clip(0.0,1.0)
             ballot_weight = cand_df['ballot_weight']
             S_wrk = S_orig.mul(ballot_weight, axis = 0)
-            
+
     return winner_list
 
 #Method to get all output quality metrics for a winner set
@@ -219,7 +217,7 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
         most_polarized_winner = {}
         least_polarized_winner = {}
 
-        
+
         metrics = {
                     'average_utility' : average_utility,
                     'average_ln_utility' : average_ln_utility,
@@ -240,7 +238,7 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
                     'average_winner_polarization' : average_winner_polarization,
                     'most_polarized_winner' : most_polarized_winner,
                     'least_polarized_winner' : least_polarized_winner
-                    
+
                                         }
 
     S_norm = S_in.divide(K)
@@ -252,15 +250,24 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
     metrics['average_utility'][method] = S_winners.sum(axis=1).sum()  / V
     metrics['average_ln_utility'][method] = np.log1p(S_winners.sum(axis=1)).sum()  / V
     metrics['average_favored_winner_utility'][method] = S_winners.max(axis=1).sum()  / V
-    metrics['average_unsatisfied_utility'][method] = sum([1-i for i in S_winners.sum(axis=1) if i < 1]) / V
-    metrics['fully_satisfied_voters'][method] = sum([(i>=1) for i in S_winners.sum(axis=1)])  / V
-    metrics['totally_unsatisfied_voters'][method] = sum([(i==0) for i in S_winners.sum(axis=1)])  / V
+    metrics['average_unsatisfied_utility'][method] = (
+        sum(1 - i for i in S_winners.sum(axis=1) if i < 1) / V
+    )
+
+    metrics['fully_satisfied_voters'][method] = (
+        sum(i >= 1 for i in S_winners.sum(axis=1)) / V
+    )
+
+    metrics['totally_unsatisfied_voters'][method] = (
+        sum(i == 0 for i in S_winners.sum(axis=1)) / V
+    )
+
 
     #Represenation Metrics
     metrics['harmonic_quality'][method] = np.divide(S_winners.values , np.argsort(S_winners.values, axis=1) +1).sum()  / V
-    metrics['unitary_quality'][method] = S_winners.divide((S_winners.sum() * W/V).clip(lower=1)).sum(axis = 1).clip(upper=1).sum() / V 
-    metrics['ebert_cost'][method] = (S_winners.divide(S_winners.sum() * W/V).sum(axis = 1)**2).sum() / V 
-    metrics['most_blocking_loser_capture'][method] = S_norm.gt((S_winners.sum(axis = 1)), axis=0).sum().max() / V 
+    metrics['unitary_quality'][method] = S_winners.divide((S_winners.sum() * W/V).clip(lower=1)).sum(axis = 1).clip(upper=1).sum() / V
+    metrics['ebert_cost'][method] = (S_winners.divide(S_winners.sum() * W/V).sum(axis = 1)**2).sum() / V
+    metrics['most_blocking_loser_capture'][method] = S_norm.gt((S_winners.sum(axis = 1)), axis=0).sum().max() / V
     metrics['largest_total_unsatisfied_group'][method] = S_norm[S_winners.sum(axis = 1) == 0 ].astype(bool).sum(axis=0).max() / V
     metrics['average_utility_gain_from_extra_winner'][method] = S_norm.sub(S_winners.sum(axis = 1),axis = 0).clip(lower=0).sum(axis = 0).max() / V 
 
@@ -272,7 +279,7 @@ def get_metrics(S_in,metrics,winner_list,method,K=5):
     metrics['average_winner_polarization'][method] = S_winners.std(axis=0).mean()
     metrics['most_polarized_winner'][method] = S_winners.std(axis=0).max()
     metrics['least_polarized_winner'][method] = S_winners.std(axis=0).min()
-    
+
     return   metrics
 
 
